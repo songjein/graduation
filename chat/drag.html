@@ -3,9 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>jQuery UI Droppable - Shopping to_do_list Demo</title>
- <link rel="stylesheet" href="jquery-ui.css">
+  <link rel="stylesheet" href="jquery-ui.css">
   <script src="jquery-1.11.0.js"></script>
   <script src="jquery-ui.js"></script>
+
+  <!--Bootstrap-->
+    <link rel="stylesheet" href="css/bootstrap.css">
+      <link rel="stylesheet" href="css/bootstrap-theme.css">
+  <script src="js/bootstrap.js"></script>
 
   <style>
   h1 { padding: .2em; margin: 0; }
@@ -18,9 +23,9 @@
 
   <script>
   $(function() {
-    $( "#chat li" ).draggable(
-      { revert: "valid" }
-    );
+    // $( "#chat li" ).draggable(
+    //   { revert: "valid" }
+    // );
 
     $( "#to_do_list ol" ).droppable({
       activeClass: "ui-state-default",
@@ -28,7 +33,11 @@
       accept: ":not(.ui-sortable-helper)",
       drop: function( event, ui ) {
         $( this ).find( ".placeholder" ).remove();
-        $( "<li></li>" ).text( ui.draggable.text() ).appendTo( this );
+        $( "<li></li>" ).text( ui.draggable.text() )
+                        .appendTo( this )
+                        .dblclick(function(){
+                                    $('#myModal').modal()
+                                  })
       }
     }).sortable({
       items: "li:not(.placeholder)",
@@ -45,15 +54,20 @@
 
   $(function(){
     setInterval(function(){
-      $('<li></li>').text(cnt + ' bula bula').appendTo('#chat').draggable({ revert: "valid" });
+      $('<li></li>').text(cnt + ' bula bula').appendTo('#chat').draggable({ revert: true, helper: "clone" });
       cnt ++ 
     }, 1000)
   })
+
+
+   /*
+    리스트 더블클릭하면 수정할 수 있게.
+  */
   </script>
   
 </head>
 <body>
- 
+ <!--div 영역이 너무 큼. -->
 <div id="chat">
   <h1>Let chat!</h1>
 </div>
@@ -66,6 +80,27 @@
     </ol>
   </div>
 </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
  
  
 </body>
