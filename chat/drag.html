@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Droppable - Shopping to_do_list Demo</title>
+ <link rel="stylesheet" href="jquery-ui.css">
+  <script src="jquery-1.11.0.js"></script>
+  <script src="jquery-ui.js"></script>
+
+  <style>
+  h1 { padding: .2em; margin: 0; }
+  #chat { float:left; width: 40%; margin-right: 2em; }
+
+  #to_do_list { width: 50%; float: left; margin-top: 1em; }
+  /* style the list to maximize the droppable hitarea */
+  #to_do_list ol { margin: 0; padding: 1em 0 1em 3em; }
+  </style>
+
+  <script>
+  $(function() {
+    $( "#chat li" ).draggable(
+      { revert: "valid" }
+    );
+
+    $( "#to_do_list ol" ).droppable({
+      activeClass: "ui-state-default",
+      hoverClass: "ui-state-hover",
+      accept: ":not(.ui-sortable-helper)",
+      drop: function( event, ui ) {
+        $( this ).find( ".placeholder" ).remove();
+        $( "<li></li>" ).text( ui.draggable.text() ).appendTo( this );
+      }
+    }).sortable({
+      items: "li:not(.placeholder)",
+      sort: function() {
+        // gets added unintentionally by droppable interacting with sortable
+        // using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
+        $( this ).removeClass( "ui-state-default" );
+      }
+    });
+  });
+
+
+  cnt = 0;
+
+  $(function(){
+    setInterval(function(){
+      $('<li></li>').text(cnt + ' bula bula').appendTo('#chat').draggable({ revert: "valid" });
+      cnt ++ 
+    }, 1000)
+  })
+  </script>
+  
+</head>
+<body>
+ 
+<div id="chat">
+  <h1>Let chat!</h1>
+</div>
+ 
+<div id="to_do_list">
+  <h1 class="ui-widget-header">to do list</h1>
+  <div class="ui-widget-content">
+    <ol>
+      <li class="placeholder">Add your items here</li>
+    </ol>
+  </div>
+</div>
+ 
+ 
+</body>
+</html>
