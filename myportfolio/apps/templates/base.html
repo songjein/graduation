@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko-kr">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>My portfolio</title>
+    {% block link%}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='summernote/dist/summernote.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/redmond/jquery-ui.css">
+    {% endblock %}
+
+    {% block scripts %}
+        <script src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+        <script src="{{ url_for('static', filename='summernote/dist/summernote.min.js') }}"></script>
+        <script src="http://js.pusher.com/2.2/pusher.min.js"></script>
+    {% endblock %}
+
+    {% block favicon %}
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}"/>
+    {% endblock %}
+</head>
+<body>
+{% block layout %}{% endblock %}
+
+</body>
+</html>
+

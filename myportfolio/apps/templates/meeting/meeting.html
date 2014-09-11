@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+
+
+
+
+<style>
+  h1 {padding : .2em; margin: 0;}
+
+  #chat {width: 100%; margin-right: 2em;}
+
+  #to_do_list { width: 100%; margin-top: 1em;}
+
+  #to_do_list ol {margin:0; padding: 1em 0 1em 3em;}
+
+  #chatpanel li {list-style: none;}
+
+  /*li {font-size: 2em;}*/
+
+  textarea { width: 100%;}
+
+</style>
+
+<div class="row">
+  <div class="col-md-5">
+    <div id="chatpanel">
+    </div>
+  </div>
+  <div class="col-md-6 col-md-offset-1">
+    <div id="to_do_list">
+      <h1 class="ui-widget-header">To-do-list</h1>
+      <div class="ui-widget-content">
+        <ol>
+          <li class="placeholder">Add your items here</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom">
+  <div class="container" style="padding-top:15px">
+    <div class="row" >
+      <div class="form-group has-warning col-md-2">
+        <input type="text" class="form-control" id="chat_name" placeholder="name">
+      </div>
+      <div class="form-group has-success col-md-8">
+        <input type="text" class="form-control" id="chat_msg" placeholder="message">
+      </div>
+      <div class="col-md-2">
+        <input type="button" id="send" class="btn btn-default" value="Send"/>
+      </div> 
+    </div>
+  </div>
+</nav>
+
+<!--Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title">Modify To-do-list item</h4>
+      </div>
+      <div class="modal-body">
+        <textarea></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success save-btn" data-dismiss="modal">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+$(function() {
+
+    // code here
+    var pusher = new Pusher('2f1737dadfe8bacfb3a1')
+    var channel = pusher.subscribe('test_channel')
+
+    channel.bind('event_msg', function(data){
+      // $('#chatpanel').append('<h3>' + data.name + " : " + data.msg + '</h3>')
+
+      // tmp = $('<h3></h3>').html(data.name + " : " + data.msg)
+      // $('<div></div>').append(tmp).appendTo('#chatpanel').draggable()
+
+      $('<li></li>').html('<span class="username" style="color:' +  getUsernameColor(data.name) +'">' + data.name + '</span> : <span class="usermsg">' + data.msg + '</span>' ).appendTo('#chatpanel').draggable({revert:true , helper:"clone"});
+
+
+    })
+
+    $( "#to_do_list ol" ).droppable({
+      // activeClass: "ui-state-default",
+      hoverClass: "ui-state-hover",
+      accept: ":not(.ui-sortable-helper)",
+      drop: function( event, ui ) {
+        $( this ).find( ".placeholder" ).remove();
+        $( "<li></li>" ).text( ui.draggable.find('span:eq(1)').text() )
+                        .appendTo( this )
+                        .dblclick(function(){
+                          // open modal
+                          $('#myModal').modal()
+                          // get the content of the current list item
+                          $current_item = $(this)
+                          $('.modal-body textarea').val($current_item.text())
+                          // if  click save button..
+                          $('.modal-footer .save-btn').click(function(){
+                              
+                            $current_item.text($('.modal-body textarea').val())
+                          })
+                        })
+      }
+    }).sortable({
+      items: "li:not(.placeholder)",
+      sort: function() {
+        // gets added unintentionally by droppable interacting with sortable
+        // using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
+        $( this ).removeClass( "ui-state-default" );
+      }
+    });
+
+
+    $('input').keyup(function(e) {
+      if (e.keyCode == 13){
+        var name = $('#chat_name').val()
+        var msg = $('#chat_msg').val()
+
+        $('#chat_msg').val('')
+
+        $.get('/send', {
+          name_data : name,
+          msg_data : msg
+        }, function(data){})
+      }       
+    });
+
+  });
+
+
+function getUsernameColor(username) {
+  // Compute hash code
+  var hash = 7;
+  for (var i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + (hash << 5) - hash;
+  }
+  // Calculate color
+  var index = Math.abs(hash % 360);
+  return "hsl(" + index + ", 77%, 60%)";
+}
+
+</script>
+
+{% endblock %}
