@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+
+
+{% if logs %}
+  {% for log in logs%}
+    [
+    {{log.id}},
+    {{log.title}},
+    {{log.content}}
+    ]
+  {% endfor %}
+<br><hr>
+
+<h1>Comments</h1>
+<form class="form-inline" role="form" method='POST'>
+  <div class="form-group has-error">
+    <input type="text" class="form-control"placeholder="로그아이디" name="log_id">
+  <div class="form-group has-error">
+    <input type="text" class="form-control"placeholder="유저아이디" name="user_id">
+  </div>
+  <div class="form-group has-error">
+    <input type="text" class="form-control" placeholder="추천여부" name="is_like">
+  </div>
+  <div class="form-group has-error">
+    <input type="text" class="form-control" placeholder="내용" name="content">
+  </div>
+  <button type="submit" class="btn btn-default">제출</button>
+</form>
+{% else %}
+  {{'로그 목록이 없습니다.'}}
+{% endif %}
+
+<br><hr>
+
+
+{% endblock%}

@@ -1,0 +1,314 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+<script>
+
+
+var category = {
+    'None' : [
+      'None'
+    ],
+
+    'Arts': [
+      'Aesthetics',
+      'Animation',
+      'Antiques',
+      'Architecture',
+      'Art History',
+      'Body art',
+      'Classical Studies',
+      'Comics',
+      'Costumes',
+      'Crafts',
+      'Dance',
+      'Design',
+      'Digital',
+
+      'Entertainment',
+      'Graphic Design',
+      'Humanities',
+      'Illustration',
+      'Literature',
+      'Movies',
+      'Music',
+      'Myths and Folktales',
+      'Performing Arts',
+      'Photography',
+      'Radio',
+      'Rhetoric',
+      'Television',
+      'Typography',
+      'Video',
+      'Visual Arts'
+    ],
+
+    'Games' : [
+      'Board Games',
+      'Card Games',
+      'Gambling', 
+      'Online',  
+      'Party Games',
+      'Puzzles',  
+      'Roleplaying',
+      'Video Games'
+      ],
+
+    'Society': [
+      'Activism',
+      'Advice',
+      'Crime',
+      'Death',
+      'Disabled',
+      'Economic',
+      'Educatio',
+      'Ethnicit',
+      'Folklore',
+      'Future',
+      'Government',
+      'History',
+      'Issues',
+      'Language and Linguistics',
+      'Law',
+      'Military',
+      'Organizations',
+      'Paranormal',
+      'People',
+      'Philosophy',
+      'Politics',
+      'Relationships',
+      'Religion and Spirituality',
+      'Social Sciences',
+      'Support Groups',
+      'Women',
+      'Work'
+    ],
+
+    'Business' : [
+      'Accounting ',
+      'Business and Society',
+      'Education and Training',
+      'Information Services',
+      'International Business and Trade',
+      'Management',
+      'Marketing and Advertising' 
+    ],
+
+    'Science' : [
+      'Anomalies and Alternative Science',
+      'Astronomy',
+      'Biology',
+      'Chemistry',
+      'Computer Science',
+      'Earth Sciences',
+      'Environment',
+      'Math',
+      'Physics',
+      'Social Sciences',
+      'Technolo',
+      'Women'
+    ],
+
+    'Computers' : [
+
+      'Computer Science',
+      'Hardware',
+      'Internet',
+      'Security',
+      'Software',
+      'Systems',
+      'Algorithms',
+      'Artificial Intelligence',
+      'Artificial Life',  
+      'CAD and CAM',
+      'Computer and Technology Law', 
+      'Data Communications', 
+      'Data Formats', 
+      'Desktop Publishing',
+      'E-Books',
+      'Emulators', 
+      'Games', 
+      'Graphics', 
+      'Hacking',  
+      'Home Automation', 
+      'Human-Computer Interaction',
+      'Intranet',
+      'Mobile Computing',  
+      'Multimedia', 
+      'Newsgroups', 
+      'Open Source', 
+      'Operating Systems', 
+      'Parallel Computing', 
+      'Performance and Capacity',
+      'Programming',
+      'Robotics', 
+      'Speech Technology', 
+      'Virtual Reality', 
+      'Chats and Forums', 
+      'Companies',
+      'Conferences', 
+      'Consultants', 
+      'Directories', 
+      'Education', 
+      'Employment', 
+      'Ethics', 
+      'History', 
+      'News and Media',
+      'Organizations', 
+      'Product Support', 
+      'Shopping' 
+    ],
+
+    'Home' : [
+      'Apartment Living',
+      'Consumer Information',
+      'Cooking',
+      'Do-It-Yourself',
+      'Domestic Services',
+      'Emergency Preparation',
+      'Entertaining',
+      'Family',
+      'Gardening',
+      'Home Automation',
+      'Home Business',
+      'Home Buyers',
+      'Personal Finance ',
+      'Personal Organization',
+      'Pets',
+      'Shopping',
+      ],
+
+
+      'Recreation' : [
+        'Audio',
+        'Birding',
+        'Boating',
+        'Camps ',
+        'Climbing',
+        'Collecting',
+        'Fishing',
+        'Food',
+        'Gambling',
+        'Games',
+        'Gardening',
+        'Hiking',
+        'Horoscopes',
+        'Humor',
+        'Hunting',
+        'Living History ',
+        'Locks',
+        'Arts',
+        'Models',
+        'Motorcycles',
+        'Parties',
+        'Pets',
+        'Picture Ratings',
+        'Radio',
+        'Scuba Diving',
+        'Theme Parks',
+        'Trains and Railroads',
+        'Travel'
+      ]
+
+  };
+
+$ (function(){
+  setCategories(1);
+  setCategories(2);
+  setCategories(3);
+
+  $('.selectCategory1').change(function(){
+    setCategories(1);
+  });
+
+  $('.selectCategory2').change(function(){
+    setCategories(2);
+  });
+
+  $('.selectCategory3').change(function(){
+    setCategories(3);
+  });
+
+})
+
+function setCategories(num){
+  var selected = $(".selectCategory" + num + " option:selected").text();
+
+    $('.showCategory' + num).html('');
+
+    $.each(category[selected], function(index, value){
+     $('<option></option>').text(category[selected][index]).appendTo($('.showCategory' + num))
+   })
+}
+
+</script>
+
+<h1>Project 생성</h1>
+<form role="form" method='POST'>
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="프로젝트 명" name="project_name">
+  </div>
+
+  <div>
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="프로젝트 설명" name="project_desc">
+    </div>
+  </div>
+
+  <div class="form-group has-success">
+   <label>그룹1</label>
+   <select name="group1" class="form-control selectCategory1">
+    <option value="Arts">Arts</option>
+    <option value="Games">Games</option>
+    <option value="Society">Society</option>
+    <option value="Business">Business</option>
+    <option value="Science">Science</option>
+    <option value="Computers">Computers</option>
+    <option value="Home">Home</option>
+    <option value="Recreation">Recreation</option>
+  </select>
+  <select name="category1" multiple class="form-control showCategory1"></select>
+  </div>
+
+   <div class="form-group has-warning">
+   <label>그룹2</label>
+   <select name="group2" class="form-control selectCategory2">
+    <option value="Arts">Arts</option>
+    <option value="Games">Games</option>
+    <option value="Society">Society</option>
+    <option value="Business">Business</option>
+    <option value="Science">Science</option>
+    <option value="Computers">Computers</option>
+    <option value="Home">Home</option>
+    <option value="Recreation">Recreation</option>
+  </select>
+  <select name="category2" multiple class="form-control showCategory2"></select>
+  </div>
+
+
+ <div class="form-group has-error">
+   <label>그룹3</label>
+   <select name="group3" class="form-control selectCategory3">
+    <option value="Arts">Arts</option>
+    <option value="Games">Games</option>
+    <option value="Society">Society</option>
+    <option value="Business">Business</option>
+    <option value="Science">Science</option>
+    <option value="Computers">Computers</option>
+    <option value="Home">Home</option>
+    <option value="Recreation">Recreation</option>
+  </select>
+  <select name="category3" multiple class="form-control showCategory3"></select>
+  </div>
+
+
+  <button type="submit" class="btn btn-default">제출</button>
+</form>
+
+
+</select>
+
+
+<br><hr>
+<!--여기에 디비 목록 보여주면 되겠다.-->
+
+{% endblock%}

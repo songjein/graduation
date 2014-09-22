@@ -5,32 +5,45 @@ models.py
 """
 from apps import db
 
+
+#프로젝트 인풋 받을 때 그룹도 받아서 add해준다.
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
     
-    # category_1 = db.Column(db.String(255))
-    # category_2 = db.Column(db.String(255))
-    # category_3 = db.Column(db.String(255))
+    title = db.Column(db.String(255))
+    description = db.Column(db.String(255))
+
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     
     like_count = db.Column(db.Integer, default=0)
 
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
 
-# 그러면 나머지 애들이 project_id혹은 relationship을 가지고 있어야돼.
-
-class Article(db.Model):
+class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+
+    # project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     project = db.relationship('Project', 
-        backref=db.backref('articles', cascade='all, delete-orphan', lazy='dynamic'))
+        backref=db.backref('groups', cascade='all, delete-orphan', lazy='dynamic'))
+
+
+class Log(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # 프로젝트 id 인풋 받으면 get으로 객체 얻어와서 여기에 넣어줘.
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
+    project = db.relationship('Project', 
+        backref=db.backref('logs', cascade='all, delete-orphan', lazy='dynamic'))
 
     title = db.Column(db.String(255))
     content = db.Column(db.Text())
-    author = db.Column(db.String(255))
-    # 태그 
-    category = db.Column(db.String(255))
-    
+
+    # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', 
+        backref=db.backref('logs', cascade='all, delete-orphan', lazy='dynamic'))
+
     # 이건 안쓸거야. 댓글이 좋아요인지로 .. 판단해야해 
     like_count = db.Column(db.Integer, default=0)
     date_created = db.Column(db.DateTime(), default=db.func.now())
@@ -38,13 +51,14 @@ class Article(db.Model):
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    article = db.relationship('Article',
+    log_id = db.Column(db.Integer, db.ForeignKey('log.id'))
+    log = db.relationship('Log',
         backref=db.backref('comments', cascade='all, delete-orphan', lazy='dynamic'))
 
-    # 작가를 실제 회원으로 바꿔야되. relationship으로 하면 될듯.
-    author = db.Column(db.String(255))
-    email = db.Column(db.String(255))
-    password = db.Column(db.String(255))
+    # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', 
+        backref=db.backref('comments', cascade='all, delete-orphan', lazy='dynamic'))
 
     content = db.Column(db.Text())
 

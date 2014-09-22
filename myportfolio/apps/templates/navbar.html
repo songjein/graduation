@@ -1,22 +1,18 @@
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{ url_for('article_list') }}">XXX's/Project/graduation_project</a> 
+            <a class="navbar-brand" href="{{ url_for('article_list') }}">graduation project test..</a> 
         </div>
         <ul class="nav navbar-nav">
-            <li{% if active_tab == 'timeline' %} class="active"{% endif %}><a href="{{ url_for('article_list') }}">show logs</a></li>
-            <li{% if active_tab == 'article_create' %} class="active"{% endif %}><a href="{{ url_for('article_create') }}">write a log</a></li>
-            <li{% if active_tab == 'schedule' %} class="active"{% endif %}><a href="{{ url_for('schedule') }}">schedule</a></li>
+            <li><a href="{{ url_for('join') }}">join</a></li>
+            <li><a href="{{ url_for('create_project') }}">create project</a></li>
+            <li><a href="{{ url_for('make_log') }}">make logs</a></li>
+            <li><a href="{{ url_for('make_comment') }}">make comments</a></li>
+            <li><a href="{{ url_for('make_to_do_list') }}">toDoList</a></li>
+
             <li{% if active_tab == 'meeting' %} class="active"{% endif %}><a href="{{ url_for('meeting') }}">meeting</a></li>
             
         </ul>
 
-
-        <!--index 페이지가 index 폴더 밑에 있는게 좀 그렇지만.. 나중에 고치자. -->
-        <ul class="nav navbar-nav navbar-right">
-            <li{% if active_tab == 'test' %} class="active"{% endif %}><a href="{{ url_for('test') }}">test</a></li>
-          <li><a href="#">go to home</a></li>
-          <li><a href="{{url_for('portfolio')}}">go to portfolio</a></li>
-        </ul>
     </div>
 </nav>

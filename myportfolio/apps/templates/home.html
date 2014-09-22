@@ -1,44 +1,7 @@
 {% extends "layout.html" %}
 
 {% block contents %}
-    <div class="llArticleCategories">
-        <div class="page-header">
-            <h1>Log lists
-                <small>로그 카테고리별로 보기</small>
-            </h1>
-        </div>
-        <a href="{{ url_for('article_list') }}" class="label {% if active_category %}label-default{% else %}label-primary{% endif %}">All</a>
-        {% for category in context.category_list %}
-            <a href="{{ url_for('article_list', category=category) }}" class="label {% if category == active_category %}label-primary{% else %}label-default{% endif %}">{{ category }}</a>
-        {% endfor %}
-    </div>
 
-    <div class="llArticleList">
-        <div class="page-header">
-            <h1>Project's log list
-                <small>지금까지 남긴 로그 리스트</small>
-            </h1>
-        </div>
-        {% if active_category %}
-            <div class="well well-sm">카테고리가 <strong>'{{ active_category }}'</strong>인 로그 리스트 입니다.</div>
-        {% endif %}
-        {% if context.article_list %}
-            {% for article in context.article_list %}
-                <div class="well" id="article_{{ article.id }}">
-                    <h1><a href="{{ url_for('article_detail', id=article.id) }}">{{ article.title }}</a></h1>
-
-                    <h3>{{ article.author }}</h3>
-                    <h6>{{ article.date_created.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
-
-                    <p>{{ article.content|safe }}</p>
-
-                    <p>좋아요 : {{ article.like_count }}</p>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="no-list">
-                로그가 존재하지 않습니다. 새로운 로그를 등록해주세요.
-            </div>
-        {% endif %}
-    </div>
+    각 기능 별 테스트 페이지.
+  
 {% endblock %}
