@@ -107,8 +107,9 @@ def create_project():
     
 @app.route('/make_log', methods=['GET', 'POST'])
 def make_log():
+    projects = Project.query.all()
 
-    return render_template('make_log/make_log.html')
+    return render_template('make_log/make_log.html', projects = projects)
 
 @app.route('/make_comment', methods=['GET', 'POST'])
 def make_comment():

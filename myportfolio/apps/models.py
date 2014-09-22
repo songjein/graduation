@@ -6,14 +6,13 @@ models.py
 from apps import db
 
 
-#프로젝트 인풋 받을 때 그룹도 받아서 add해준다.
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     title = db.Column(db.String(255))
     description = db.Column(db.String(255))
 
-    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    # group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     
     like_count = db.Column(db.Integer, default=0)
 
@@ -24,7 +23,7 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
 
-    # project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     project = db.relationship('Project', 
         backref=db.backref('groups', cascade='all, delete-orphan', lazy='dynamic'))
 
