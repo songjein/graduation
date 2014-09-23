@@ -10,9 +10,30 @@ from apps.models import (User, Comment, Log, Group, Project)
 #
 # @index & article list
 #
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def article_list():
-    return render_template('home.html')
+
+    group_list = []
+
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+
+        user = User.query.get(user_id)
+
+        users_comments = user.comments
+
+        # return users_comments[0].content
+
+        for comment in users_comments:
+            group_list.append(comment.log.project.groups[0].title)
+            group_list.append(comment.log.project.groups[1].title)
+            group_list.append(comment.log.project.groups[2].title)
+
+        group_list = set(group_list)
+
+    users = User.query.all()
+
+    return render_template('home.html', users = users, group_list=group_list)
 
 
 @app.route('/meeting', methods=['GET'])
@@ -125,9 +146,12 @@ def make_log():
         project = Project.query.get(project_id)
         user = User.query.get(user_id)
 
+        return user_id
         log = Log(
                 project = project,
+                project_id = project_id,
                 user = user,
+                user_id = user_id,
                 title = title,
                 content = content
             )
@@ -154,6 +178,7 @@ def make_comment():
         if request.form['islike'] == 'like_with_feed':
             is_like = True
         content = request.form['content']
+
 
         log = Log.query.get(log_id)
         user = User.query.get(user_id)

@@ -32,7 +32,8 @@ class Log(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # 프로젝트 id 인풋 받으면 get으로 객체 얻어와서 여기에 넣어줘.
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
-    project = db.relationship('Project', 
+    project = db.relationship('Project',
+        foreign_keys=[project_id], 
         backref=db.backref('logs', cascade='all, delete-orphan', lazy='dynamic'))
 
     title = db.Column(db.String(255))
@@ -41,6 +42,7 @@ class Log(db.Model):
     # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', 
+        foreign_keys=[user_id],
         backref=db.backref('logs', cascade='all, delete-orphan', lazy='dynamic'))
 
     # 이건 안쓸거야. 댓글이 좋아요인지로 .. 판단해야해 
