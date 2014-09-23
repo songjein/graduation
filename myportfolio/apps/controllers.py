@@ -113,7 +113,6 @@ def create_project():
 def make_log():
     projects = Project.query.all()
     users = User.query.all()
-    logs = Log.query.all()
 
     #원래는 프로젝트에 속한 사람을 뿌려줘야돼.
 
@@ -139,12 +138,40 @@ def make_log():
 
         flash('submit success','success')
 
+    logs = Log.query.all()
     return render_template('make_log/make_log.html', projects = projects, users = users, logs = logs)
 
 @app.route('/make_comment', methods=['GET', 'POST'])
 def make_comment():
+     # projects = Project.query.all()
+    users = User.query.all()
+    logs = Log.query.all()
 
-    return render_template('make_comment/make_comment.html')
+    if request.method == 'POST':
+        log_id = request.form['log_id']
+        user_id = request.form['user_id']
+        is_like = False
+        if request.form['islike'] == 'like_with_feed':
+            is_like = True
+        content = request.form['content']
+
+        log = Log.query.get(log_id)
+        user = User.query.get(user_id)
+
+        comment = Comment(
+                log = log,
+                user = user,
+                is_like = is_like,
+                content = content,
+            )
+        db.session.add(comment)
+        db.session.commit()
+
+        flash('submit success','success')
+        
+    comments = Comment.query.all()
+
+    return render_template('make_comment/make_comment.html', users=users, logs=logs, comments=comments)
 
 @app.route('/make_to_do_list', methods=['GET', 'POST'])
 def make_to_do_list():
