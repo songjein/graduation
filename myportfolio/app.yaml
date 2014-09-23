@@ -1,5 +1,5 @@
 application: jein-song
-version: 1054
+version: 1070
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -11,7 +11,7 @@ builtins:
 - deferred: on
 - remote_api: on
 
-### handlers: set script or static files by url pattern ###
+### handlers: set script or static files b64url pattern ###
 handlers:
 - url: /static
   static_dir: apps/static

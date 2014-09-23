@@ -6,23 +6,21 @@
     {% endblock %}
 
     <div class="container" style="padding-top:70px">
-
     	{% with messages = get_flashed_messages(with_categories=true) %}
-		    {% if messages %}
-		        <div id="messages" class="row messages">
-		            {% for category, message in messages %}
-		                <div class="alert alert-{{ category }} fade in">
-		                    <a class="close" data-dismiss="alert" href="#">&times;</a>
-		                    {% if category == 'success' %}
-		                        <i class="icon-ok-sign"></i>
-		                    {% endif %}
-		                    {{ message }}
-		                </div>
-		            {% endfor %}
-		        </div>
-		    {% endif %}
-		{% endwith %}
-
+			{% if messages %}
+				<div id="messages" class="row">
+					{% for category, message in messages %}
+						<div class="alert alert-{{category}}" fade in>
+							<a class="close" data-dismiss="alert" href='#'>&times;</a>
+							{% if category == "success" %}
+								<i class="icon-ok-sign"></i>
+							{% endif %}
+							{{message}}
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+    	{% endwith%}
         {% block contents %}{% endblock %}
     </div>
 {% endblock %}

@@ -255,8 +255,9 @@ function setCategories(num){
   </div>
 
   <div class="form-group has-success">
-   <label>그룹1</label>
+   <label>그룹1(카테고리1)</label>
    <select name="group1" class="form-control selectCategory1">
+    <option value="None">없음</option>
     <option value="Arts">Arts</option>
     <option value="Games">Games</option>
     <option value="Society">Society</option>
@@ -270,8 +271,9 @@ function setCategories(num){
   </div>
 
    <div class="form-group has-warning">
-   <label>그룹2</label>
+   <label>그룹2(카테고리2)</label>
    <select name="group2" class="form-control selectCategory2">
+    <option value="None">없음</option>
     <option value="Arts">Arts</option>
     <option value="Games">Games</option>
     <option value="Society">Society</option>
@@ -286,8 +288,9 @@ function setCategories(num){
 
 
  <div class="form-group has-error">
-   <label>그룹3</label>
+   <label>그룹3(카테고리3)</label>
    <select name="group3" class="form-control selectCategory3">
+    <option value="None">없음</option>
     <option value="Arts">Arts</option>
     <option value="Games">Games</option>
     <option value="Society">Society</option>
@@ -306,9 +309,24 @@ function setCategories(num){
 
 
 </select>
-
-
-<br><hr>
+<hr>
 <!--여기에 디비 목록 보여주면 되겠다.-->
-
+<div class="form-group has-success">
+    <label> 생성 프로젝트 목록(프로젝트아이디,제목,상세,생성일,그룹(카테고리1,2,3)) </label>
+    <select multiple class="form-control">
+    {% for project in projects%}
+      <option>
+      {{project.id}},
+      {{project.title}},
+      {{project.description}}
+      {{project.date_created}},
+      (
+        {% for group in project.groups%}
+          {{group.title}},
+        {% endfor %}
+      )
+      </option>
+    {% endfor %}
+    </select>
+  </div>
 {% endblock%}

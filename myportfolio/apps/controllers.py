@@ -42,7 +42,7 @@ def sendmsg():
 def join():
 
     if request.method == 'POST':
-        user_id = request.form['id']
+        user_id = request.form['user_id']
         pw = request.form['pw']
         name = request.form['name']
 
@@ -55,9 +55,11 @@ def join():
         db.session.add(user)
         db.session.commit()
 
-        flash('success')
+        flash('submit success','success')
 
-    return render_template('join/join.html')
+    users = User.query.all()
+
+    return render_template('join/join.html', users = users)
 
 
 @app.route('/create_project', methods=['GET', 'POST'])
@@ -101,15 +103,43 @@ def create_project():
         db.session.add(g3)
         db.session.commit()
 
-        flash('입력 성공.')
+        flash('submit success','success')
+
+    projects = Project.query.all()
        
-    return render_template('create_project/create_project.html')
+    return render_template('create_project/create_project.html', projects = projects)
     
 @app.route('/make_log', methods=['GET', 'POST'])
 def make_log():
     projects = Project.query.all()
+    users = User.query.all()
+    logs = Log.query.all()
 
-    return render_template('make_log/make_log.html', projects = projects)
+    #원래는 프로젝트에 속한 사람을 뿌려줘야돼.
+
+    if request.method == 'POST':
+        project_id = request.form['project']
+        user_id = request.form['user']
+        title = request.form['title']
+        content = request.form['content']
+
+        project = Project.query.get(project_id)
+        user = User.query.get(user_id)
+
+        log = Log(
+                project = project,
+                user = user,
+                title = title,
+                content = content
+            )
+        # project와 user가 제대로 들어가는지는x
+
+        db.session.add(log)
+        db.session.commit()
+
+        flash('submit success','success')
+
+    return render_template('make_log/make_log.html', projects = projects, users = users, logs = logs)
 
 @app.route('/make_comment', methods=['GET', 'POST'])
 def make_comment():
