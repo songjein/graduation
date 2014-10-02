@@ -10,8 +10,20 @@ from apps.models import (User, Comment, Log, Group, Project)
 #
 # @index & article list
 #
+
+
 @app.route('/', methods=['GET', 'POST'])
 def article_list():
+
+    return redirect(url_for('login'))
+
+@app.route('/login')
+def login():
+    return render_template('login/login.html')
+
+
+@app.route('/test', methods=['GET', 'POST'])
+def test():
 
     group_list = []
 
@@ -146,7 +158,8 @@ def make_log():
         project = Project.query.get(project_id)
         user = User.query.get(user_id)
 
-        return user_id
+        # 확신해도 되는건 project, user 제대로 들어감.
+
         log = Log(
                 project = project,
                 project_id = project_id,
@@ -155,7 +168,6 @@ def make_log():
                 title = title,
                 content = content
             )
-        # project와 user가 제대로 들어가는지는x
 
         db.session.add(log)
         db.session.commit()

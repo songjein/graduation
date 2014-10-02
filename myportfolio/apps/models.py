@@ -33,22 +33,29 @@ class Log(db.Model):
     # 프로젝트 id 인풋 받으면 get으로 객체 얻어와서 여기에 넣어줘.
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     project = db.relationship('Project',
-        foreign_keys=[project_id], 
+        foreign_keys=[project_id],
+        primaryjoin="Log.project_id==Project.id",
         backref=db.backref('logs', cascade='all, delete-orphan', lazy='dynamic'))
 
     title = db.Column(db.String(255))
     content = db.Column(db.Text())
 
     # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.String(255))
     user = db.relationship('User', 
         foreign_keys=[user_id],
+        primaryjoin="Log.user_id==User.id",
         backref=db.backref('logs', cascade='all, delete-orphan', lazy='dynamic'))
 
-    # 이건 안쓸거야. 댓글이 좋아요인지로 .. 판단해야해 
     like_count = db.Column(db.Integer, default=0)
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
+
+class User(db.Model):
+    id = db.Column(db.String(255), primary_key=True)
+    password = db.Column(db.String(255))
+    name = db.Column(db.String(255))
+    join_date = db.Column(db.DateTime(), default=db.func.now())
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -57,7 +64,7 @@ class Comment(db.Model):
         backref=db.backref('comments', cascade='all, delete-orphan', lazy='dynamic'))
 
     # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.String(255), db.ForeignKey('user.id'))
     user = db.relationship('User', 
         backref=db.backref('comments', cascade='all, delete-orphan', lazy='dynamic'))
 
@@ -72,10 +79,5 @@ class Comment(db.Model):
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
 
-class User(db.Model):
-    id = db.Column(db.String(255), primary_key=True)
-    password = db.Column(db.String(255))
-    name = db.Column(db.String(255))
-    join_date = db.Column(db.DateTime(), default=db.func.now())
 
 
