@@ -13,6 +13,7 @@
 
     <h1>테스트 1. 특정 유저가 어떤 그룹과 관계가 있는가.</h1>
 	<form role="form" method='POST'>
+		<input type="hidden" value="test1" name="hidden_val"/>
 	  <div class="form-group has-success">
 	    <label>유저 선택 </label>
 	    <select name="user_id" multiple class="form-control">
@@ -32,6 +33,36 @@
 	<hr>
 	{% for group_title in group_list%}
 		<h5>{{group_title}}</h5>
+	{% endfor %}
+
+	
+	<br>
+    <hr>
+
+	<h1>테스트 2. 특정 프로젝트는 어떤 유저들에게 추천을 받았는가?</h1>
+	<form role="form" method='POST'>
+		<input type="hidden" value="test2" name="hidden_val"/>
+	  <div class="form-group has-success">
+	    <label>프로젝트 선택 </label>
+	    <select name="project_id" multiple class="form-control">
+	    {% for project in projects%}
+	      <option value="{{project.id}}">
+	      {{project.id}} &nbsp;,&nbsp;
+	      {{project.title}}&nbsp;,&nbsp;
+	      {{project.description}}
+	      </option>
+	    {% endfor %}
+	    </select>
+	  </div>
+
+	  <button type="submit" class="btn btn-default">제출</button>
+	</form>
+
+	<hr>
+	{% for user_id in user_list%}
+		<h5>{{user_id}}</h5>
+	{% else %}
+		연관된 유저가 없습니다
 	{% endfor %}
   
 {% endblock %}

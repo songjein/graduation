@@ -6,21 +6,30 @@
 
 
 <style>
-  h1 {padding : .2em; margin: 0;}
+  #title {font-size: 3em; padding : .2em; margin: 0; font-weight: bold;}
 
-  #chat {width: 100%; margin-right: 2em;}
+  #to_do_list { width: 100%; margin-top: 1em;  }
 
-  #to_do_list { width: 100%; margin-top: 1em;}
+  #to_do_list ol {margin:0; padding: 1em 0 1em 3em; }
 
-  #to_do_list ol {margin:0; padding: 1em 0 1em 3em;}
 
-  #chatpanel li {list-style: none; font-size:1.5em;}
+  #chatpanel li {list-style: none; font-size:1.5em;  font-weight: bold; z-index:10;}
 
   #to_do_list li {font-size: :1.5em; font-weight: bold}
+
+  button { font-weight: bold; }
+
+  .modal {
+    color: black;
+  }
 
   /*li {font-size: 2em;}*/
 
   textarea { width: 100%;}
+
+  li{
+    outline: 1px solid transparent;
+  }
 
 </style>
 
@@ -31,20 +40,22 @@
   </div>
   <div class="col-md-6 col-md-offset-1">
     <div id="to_do_list">
-      <h1 class="ui-widget-header">To-do-list</h1>
-      <div class="ui-widget-content">
+      <span id="title">To do list</span><span id="sub">(수정은 목록을 더블 클릭)</span>
+      <div>
         <ol>
-          <li class="placeholder">Add your items here</li>
+          <li class="placeholder">목록 추가를 하려면, 여기에 drag&drop하세요</li>
         </ol>
       </div>
     </div>
     <!--button-->
-    <div class="col-md-12"><button type="button" class="btn btn-success">Capture</button></div>
+    <button type="button" class="btn btn-default col-md-12">기록하기</button>
   </div>
 </div>
 
+
+
 <nav class="navbar navbar-default navbar-fixed-bottom">
-  <div class="container" style="padding-top:15px">
+  <div class="container" style="padding-top:10px">
     <div class="row" >
       <div class="form-group has-warning col-md-2">
         <input type="text" class="form-control" id="chat_name" placeholder="name">
@@ -59,20 +70,22 @@
   </div>
 </nav>
 
+
+
 <!--Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h4 class="modal-title">Modify To-do-list item</h4>
+        <h4 class="modal-title">리스트 아이템을 수정합니다.</h4>
       </div>
       <div class="modal-body">
         <textarea></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success save-btn" data-dismiss="modal">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-success save-btn" data-dismiss="modal">변경사항 저장</button>
       </div>
     </div>
   </div>
@@ -92,13 +105,13 @@ $(function() {
       // tmp = $('<h3></h3>').html(data.name + " : " + data.msg)
       // $('<div></div>').append(tmp).appendTo('#chatpanel').draggable()
 
-      $('<li></li>').html('<span class="username" style="color:' +  getUsernameColor(data.name) +'">' + data.name + '</span> : <span class="usermsg">' + data.msg + '</span>' ).appendTo('#chatpanel').draggable({revert:true , helper:"clone"});
-
-
+      //https://www.google.co.kr/search?q=bootstrap+button+size&oq=bootstrap+button+size&aqs=chrome..69i57j0l5.2851j0j4&sourceid=chrome&es_sm=122&ie=UTF-8#newwindow=1&q=change%20css%20while%20dragging
+      $('<li></li>').html('<span class="username" style="color:' +  getUsernameColor(data.name) +'">' + data.name + '</span> : <span class="usermsg">' + data.msg + '</span>' ).appendTo('#chatpanel').draggable({revert:true , helper:"clone"/*, start: function(event, ui) { $(this).css("color", 'black'); },  stop: function(event, ui) { $(this).css("color", "white"); }*/ });
+      // 근데 드래거블이 li전체에 걸쳐있고.. this가 이거 전체를 의미해서 전체가 검은색으로 되야할텐데..
     })
 
     $( "#to_do_list ol" ).droppable({
-      // activeClass: "ui-state-default",
+      activeClass: "ui-state-default",
       hoverClass: "ui-state-hover",
       accept: ":not(.ui-sortable-helper)",
       drop: function( event, ui ) {
@@ -140,6 +153,18 @@ $(function() {
           msg_data : msg
         }, function(data){})
       }       
+    });
+
+    $('#send').click(function(e) {
+      var name = $('#chat_name').val()
+      var msg = $('#chat_msg').val()
+
+      $('#chat_msg').val('')
+
+      $.get('/send', {
+        name_data : name,
+        msg_data : msg
+      }, function(data){})
     });
 
   });

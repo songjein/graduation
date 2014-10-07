@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='summernote/dist/summernote.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/redmond/jquery-ui.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/overcast/jquery-ui.css">
     {% endblock %}
 
     {% block scripts %}
@@ -20,6 +20,14 @@
         <script src="{{ url_for('static', filename='summernote/dist/summernote.min.js') }}"></script>
         <script src="http://js.pusher.com/2.2/pusher.min.js"></script>
     {% endblock %}
+
+    <style>
+        body{
+            background: url("{{url_for('static', filename='images/portfolio.jpg')}}");
+
+            color: white;
+        }
+    </style>
 
     {% block favicon %}
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}"/>

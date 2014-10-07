@@ -18,6 +18,8 @@ class Project(db.Model):
 
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
+    hoho = db.Column(db.String(23))
+
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -47,25 +49,26 @@ class Log(db.Model):
         primaryjoin="Log.user_id==User.id",
         backref=db.backref('logs', cascade='all, delete-orphan', lazy='dynamic'))
 
+    file_key = db.Column(db.String(255))
+
     like_count = db.Column(db.Integer, default=0)
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
 
-class User(db.Model):
-    id = db.Column(db.String(255), primary_key=True)
-    password = db.Column(db.String(255))
-    name = db.Column(db.String(255))
-    join_date = db.Column(db.DateTime(), default=db.func.now())
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     log_id = db.Column(db.Integer, db.ForeignKey('log.id'))
     log = db.relationship('Log',
+        foreign_keys=[log_id],
+        primaryjoin="Comment.log_id==Log.id",
         backref=db.backref('comments', cascade='all, delete-orphan', lazy='dynamic'))
 
     # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
     user_id = db.Column(db.String(255), db.ForeignKey('user.id'))
     user = db.relationship('User', 
+        foreign_keys=[user_id],
+        primaryjoin="Comment.user_id==User.id",
         backref=db.backref('comments', cascade='all, delete-orphan', lazy='dynamic'))
 
     content = db.Column(db.Text())
@@ -79,5 +82,10 @@ class Comment(db.Model):
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
 
+class User(db.Model):
+    id = db.Column(db.String(255), primary_key=True)
+    password = db.Column(db.String(255))
+    name = db.Column(db.String(255))
+    join_date = db.Column(db.DateTime(), default=db.func.now())
 
 

@@ -5,6 +5,11 @@ from apps import app, db
 
 import pusher
 
+# import google.appengine.ext as google 
+
+# class Photo(google.db.Model):
+#     photo = google.db.BlobProperty()
+
 from apps.models import (User, Comment, Log, Group, Project)
 
 #
@@ -26,26 +31,40 @@ def login():
 def test():
 
     group_list = []
+    user_list = []
 
     if request.method == 'POST':
-        user_id = request.form['user_id']
+        if request.form['hidden_val'] == 'test1':
+            user_id = request.form['user_id']
 
-        user = User.query.get(user_id)
+            user = User.query.get(user_id)
 
-        users_comments = user.comments
+            users_comments = user.comments
 
-        # return users_comments[0].content
+            # return users_comments[0].content
 
-        for comment in users_comments:
-            group_list.append(comment.log.project.groups[0].title)
-            group_list.append(comment.log.project.groups[1].title)
-            group_list.append(comment.log.project.groups[2].title)
+            for comment in users_comments:
+                group_list.append(comment.log.project.groups[0].title)
+                group_list.append(comment.log.project.groups[1].title)
+                group_list.append(comment.log.project.groups[2].title)
 
-        group_list = set(group_list)
+            group_list = set(group_list)
+
+        elif request.form['hidden_val'] == 'test2':
+            project_id = request.form['project_id']
+
+            project = Project.query.get(project_id)
+
+            for log in project.logs:
+                for comment in log.comments:
+                    if comment.user_id not in user_list:
+                        user_list.append(comment.user_id)
+
 
     users = User.query.all()
+    projects = Project.query.all()
 
-    return render_template('home.html', users = users, group_list=group_list)
+    return render_template('home.html', users = users, group_list=group_list, projects=projects, user_list=user_list)
 
 
 @app.route('/meeting', methods=['GET'])
@@ -155,6 +174,13 @@ def make_log():
         title = request.form['title']
         content = request.form['content']
 
+        # file 저장
+        post_data = request.files['photo']
+        filestream = post_data.read()
+        upload_data = Photo()
+        upload_data.photo = google.db.Blob(filestream)
+        upload_data.put()
+
         project = Project.query.get(project_id)
         user = User.query.get(user_id)
 
@@ -166,7 +192,8 @@ def make_log():
                 user = user,
                 user_id = user_id,
                 title = title,
-                content = content
+                content = content,
+                file_key = str(upload_data.key())
             )
 
         db.session.add(log)
@@ -176,6 +203,12 @@ def make_log():
 
     logs = Log.query.all()
     return render_template('make_log/make_log.html', projects = projects, users = users, logs = logs)
+
+@app.route('/show/<key>')
+def shows(key):
+    upload_data = google.db.get(key)
+    return app.response_class(upload_data.photo)
+
 
 @app.route('/make_comment', methods=['GET', 'POST'])
 def make_comment():
@@ -210,10 +243,10 @@ def make_comment():
 
     return render_template('make_comment/make_comment.html', users=users, logs=logs, comments=comments)
 
-@app.route('/make_to_do_list', methods=['GET', 'POST'])
-def make_to_do_list():
+@app.route('/portfolio', methods=['GET', 'POST'])
+def portfolio():
 
-    return render_template('make_to_do_list/make_to_do_list.html')
+    return redirect('http://codyhouse.co/demo/vertical-timeline/index.html#0')
 
 
 
