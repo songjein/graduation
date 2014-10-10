@@ -1,174 +1,44 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Portfolio page</title>
-        <meta name="description" content="">
+{% extends "layout.html" %}
 
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/portfolio.jquery.css') }}">
-		<script src="{{ url_for('static', filename='js/portfolio.jquery.js') }}"></script>
+{% block contents %}
 
 
-        <script>
-            $(document).ready(function() {
-                $('.thumbs').portfolio({
-                    cols: 4,
-                    transition: 'slideDown'
-                });
-            });
-        </script>
-        <style>
-            body {
-                font-family: arial;
-            }
-            hr {
-                margin-bottom: 40px;
-            }
-            h1 {
-                margin-bottom: 0px;
-                margin-top: 30px;
-            }
-            h3 {
-                margin-top: 10px;
-                font-weight: normal;
-                color: #a6a6a6;
-            }
-            p {
-                line-height: 25px;
-            }
-            a.button {
-                text-decoration: none;
-            }
-            .button {
-                padding: 14px 22px;
-                background-color: #cecece;
-                color: #333333;
-                border-radius: 3px;
-                margin-bottom: 20px;
-                display: inline-block;
-            }
-            .button:hover {
-                background-color: #e1e1e1;
-            }
-            .thumbs {
-                display: block;
-            }
-            .footer {
-                display: block;
-                width: 100%;
-                margin-top: 50px;
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <center>
-            <h1>Portfolio</h1>
-            <h3>XXX님의 포트폴리오 입니다.</h3>
-        
-            <hr/>
-        </center>
-        <ul class="thumbs">
-	<li><a href="#thumb1" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')">
-		<h4>졸프</h4><span class="description">셋이 찍은 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb2" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb3" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb4" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb5" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb6" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb7" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb8" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
-	<li>
-		<a href="#thumb9" class="thumbnail" style="background-image: url('http://cfile5.uf.tistory.com/image/2501694D50E52129228397')"><h4>졸프</h4><span class="description">졸프 사진</span></a>
-	</li>
+	<link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans:400,700' rel='stylesheet' type='text/css'>
+
+	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}"> CSS reset -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/stylefortimeline.css') }}"> <!-- Resource style -->
+	<script src="{{ url_for('static', filename='js/modernizr.js') }}"></script> <!-- Modernizr -->
 
 
-</ul>
+	<section id="cd-timeline" class="cd-container">
 
-<div class="portfolio-content">
-	<div id="thumb1">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mollis nisi sit amet metus venenatis, ut congue turpis aliquet. Pellentesque eget elit sollicitudin, feugiat felis in, ornare diam. Morbi blandit sapien nibh, eu pulvinar tortor luctus nec. Aenean lobortis lacus cursus gravida adipiscing. Praesent in odio porta, placerat felis id, viverra est. Nam magna quam, tincidunt eget augue in, aliquet tristique ipsum.</p>
+	{% for log in logs%}
 
-	</div>
+			<div class="cd-timeline-block">
+				<div class="cd-timeline-img cd-picture">
+					<!-- <img src="{{ url_for('static', filename='images/cd-icon-picture.svg') }}" alt="Picture"> -->
+				</div> <!-- cd-timeline-img -->
 
-	<div id="thumb2">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse potenti. Integer a posuere tortor. Praesent malesuada mauris massa, non blandit neque tempus nec. Quisque fermentum nunc non hendrerit tempus.</p>
+				<div class="cd-timeline-content">
+					<h2>{{log.title}}</h2>
 
-	</div>
+					{% if log.file_key%}
+				      <img src="/show/{{log.file_key}}" alt="사진 없음">
+				    {% else %}
+				      (사진 없음)
+				    {% endif%}
+				      <!-- {{log.project.id}}&nbsp;,&nbsp;
+				      {{log.user.id}}&nbsp;&nbsp; -->
+				    
+					<p>{{log.content}}</p>
+					<a href="#0" class="cd-read-more">Read more</a>
+					<span class="cd-date">{{log.date_created}}</span>
+				</div> <!-- cd-timeline-content -->
+			</div> <!-- cd-timeline-block -->
 
-	<div id="thumb3">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Ut condimentum eros bibendum metus lacinia, ac condimentum justo faucibus. Nam nec dui convallis, sodales sapien in, gravida justo. Pellentesque pulvinar massa a nisl iaculis, quis iaculis elit tincidunt.</p>
+	{% endfor %}
+	</section> <!-- cd-timeline -->
 
-	</div>
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script> <!-- Resource jQuery -->
 
-	<div id="thumb4">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>Project management</h1>
-		<p>Suspendisse cursus commodo elit, at tempus felis hendrerit vel. Cras condimentum aliquam mauris at blandit. Pellentesque ac velit iaculis, lobortis nibh id, ultricies ante. Fusce vel urna justo. Maecenas rhoncus vel ligula eget feugiat. Maecenas blandit risus eros, vel imperdiet augue dapibus vitae.</p>
-
-	</div>
-
-	<div id="thumb5">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Vestibulum gravida, ante ut consectetur dictum, dolor sapien pretium elit, sed tincidunt augue sem a lorem. Vivamus quis neque pharetra, consequat dolor vel, venenatis urna. Praesent diam quam, fermentum vel tortor eget, pulvinar tincidunt velit.</p>
-
-	</div>
-
-	<div id="thumb6">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Vestibulum gravida, ante ut consectetur dictum, dolor sapien pretium elit, sed tincidunt augue sem a lorem. Vivamus quis neque pharetra, consequat dolor vel, venenatis urna. Praesent diam quam, fermentum vel tortor eget, pulvinar tincidunt velit.</p>
-
-	</div>
-
-	<div id="thumb7">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Vestibulum gravida, ante ut consectetur dictum, dolor sapien pretium elit, sed tincidunt augue sem a lorem. Vivamus quis neque pharetra, consequat dolor vel, venenatis urna. Praesent diam quam, fermentum vel tortor eget, pulvinar tincidunt velit.</p>
-
-	</div>
-
-	<div id="thumb8">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Vestibulum gravida, ante ut consectetur dictum, dolor sapien pretium elit, sed tincidunt augue sem a lorem. Vivamus quis neque pharetra, consequat dolor vel, venenatis urna. Praesent diam quam, fermentum vel tortor eget, pulvinar tincidunt velit.</p>
-
-	</div>
-
-	<div id="thumb9">
-		<div class="media"><img src="http://cfile5.uf.tistory.com/image/2501694D50E52129228397"/></div>
-		<h1>졸프</h1>
-		<p>Vestibulum gravida, ante ut consectetur dictum, dolor sapien pretium elit, sed tincidunt augue sem a lorem. Vivamus quis neque pharetra, consequat dolor vel, venenatis urna. Praesent diam quam, fermentum vel tortor eget, pulvinar tincidunt velit.</p>
-
-	</div>
-
-</div>
-        <center class="footer">
-            by <a href="#">sang moon</a> 
-        </center>
-    </body>
-</html>
+{% endblock %}

@@ -75,6 +75,8 @@
       {{log.user.id}}&nbsp;&nbsp;
       {% if log.file_key%}
       <img src="/show/{{log.file_key}}" width = "100px", height="100px" alt="사진 없음">
+      {% else %}
+      (사진 없음)
       {% endif%}
     </div>
 {% endfor %}

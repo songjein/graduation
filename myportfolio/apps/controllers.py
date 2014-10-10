@@ -5,10 +5,10 @@ from apps import app, db
 
 import pusher
 
-# import google.appengine.ext as google 
+import google.appengine.ext as google 
 
-# class Photo(google.db.Model):
-#     photo = google.db.BlobProperty()
+class Photo(google.db.Model):
+    photo = google.db.BlobProperty()
 
 from apps.models import (User, Comment, Log, Group, Project)
 
@@ -65,6 +65,13 @@ def test():
     projects = Project.query.all()
 
     return render_template('home.html', users = users, group_list=group_list, projects=projects, user_list=user_list)
+
+@app.route('/portfolio', methods=['GET'])
+def portfolio():
+    
+    logs = Log.query.order_by(Log.date_created)
+
+    return render_template('portfolio/portfolio.html', active_tab="portfolio", logs=logs)
 
 
 @app.route('/meeting', methods=['GET'])
@@ -175,11 +182,16 @@ def make_log():
         content = request.form['content']
 
         # file 저장
-        post_data = request.files['photo']
-        filestream = post_data.read()
-        upload_data = Photo()
-        upload_data.photo = google.db.Blob(filestream)
-        upload_data.put()
+
+        file_key = None
+        if request.files['photo']:
+            post_data = request.files['photo']
+            filestream = post_data.read()
+            upload_data = Photo()
+            upload_data.photo = google.db.Blob(filestream)
+            upload_data.put()
+            file_key = str(upload_data.key())
+            
 
         project = Project.query.get(project_id)
         user = User.query.get(user_id)
@@ -193,7 +205,7 @@ def make_log():
                 user_id = user_id,
                 title = title,
                 content = content,
-                file_key = str(upload_data.key())
+                file_key = file_key
             )
 
         db.session.add(log)
@@ -242,12 +254,6 @@ def make_comment():
     comments = Comment.query.all()
 
     return render_template('make_comment/make_comment.html', users=users, logs=logs, comments=comments)
-
-@app.route('/portfolio', methods=['GET', 'POST'])
-def portfolio():
-
-    return redirect('http://codyhouse.co/demo/vertical-timeline/index.html#0')
-
 
 
 # #

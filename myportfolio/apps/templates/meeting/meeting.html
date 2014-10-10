@@ -48,7 +48,7 @@
       </div>
     </div>
     <!--button-->
-    <button type="button" class="btn btn-default col-md-12">기록하기</button>
+    <button type="button" id="record_btn" class="btn btn-default col-md-12">기록하기</button>
   </div>
 </div>
 
@@ -93,6 +93,18 @@
 </div>
 
 <script>
+
+
+$(function(){
+  $('#record_btn').click(function(){
+    output = '';
+    $('ol li').each(function(index, item){
+      output += $('ol li').eq(index).text() + ','
+    })
+    alert(output)
+  })
+})
+
 $(function() {
 
     // code here
