@@ -18,7 +18,9 @@ class Project(db.Model):
 
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
-    hoho = db.Column(db.String(23))
+    file_key = db.Column(db.String(255))
+
+    # hoho = db.Column(db.String(23))
 
 
 class Group(db.Model):

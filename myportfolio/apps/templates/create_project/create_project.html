@@ -243,7 +243,7 @@ function setCategories(num){
 </script>
 
 <h1>Project 생성</h1>
-<form role="form" method='POST'>
+<form role="form" enctype="multipart/form-data"  method='POST'>
   <div class="form-group">
     <input type="text" class="form-control" placeholder="프로젝트 명" name="project_name">
   </div>
@@ -287,24 +287,27 @@ function setCategories(num){
   </div>
 
 
- <div class="form-group has-error">
-   <label>그룹3(카테고리3)</label>
-   <select name="group3" class="form-control selectCategory3">
-    <option value="None">None</option>
-    <option value="Arts">Arts</option>
-    <option value="Games">Games</option>
-    <option value="Society">Society</option>
-    <option value="Business">Business</option>
-    <option value="Science">Science</option>
-    <option value="Computers">Computers</option>
-    <option value="Home">Home</option>
-    <option value="Recreation">Recreation</option>
-  </select>
-  <select name="category3" multiple class="form-control showCategory3"></select>
-  </div>
-
-
-  <button type="submit" class="btn btn-default">제출</button>
+  <div class="form-group has-error">
+    <label>그룹3(카테고리3)</label>
+    <select name="group3" class="form-control selectCategory3">
+     <option value="None">None</option>
+     <option value="Arts">Arts</option>
+     <option value="Games">Games</option>
+     <option value="Society">Society</option>
+     <option value="Business">Business</option>
+     <option value="Science">Science</option>
+     <option value="Computers">Computers</option>
+     <option value="Home">Home</option>
+     <option value="Recreation">Recreation</option>
+   </select>
+   <select name="category3" multiple class="form-control showCategory3"></select>
+   </div>
+ 
+   <div class="form-group has-warning">
+     <p>사진 (1메가 이하) : <input type="file" name="photo"></p>
+   </div>
+ 
+   <button type="submit" class="btn btn-default">제출</button>
 </form>
 
 

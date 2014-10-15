@@ -16,7 +16,6 @@ from apps.models import (User, Comment, Log, Group, Project)
 # @index & article list
 #
 
-
 @app.route('/', methods=['GET', 'POST'])
 def article_list():
 
@@ -25,6 +24,13 @@ def article_list():
 @app.route('/login')
 def login():
     return render_template('login/login.html')
+
+@app.route('/main')
+def main():
+    
+    projects = Project.query.all()
+
+    return render_template('main/main.html', projects=projects)
 
 
 @app.route('/test', methods=['GET', 'POST'])
@@ -64,7 +70,7 @@ def test():
     users = User.query.all()
     projects = Project.query.all()
 
-    return render_template('home.html', users = users, group_list=group_list, projects=projects, user_list=user_list)
+    return render_template('test/test.html', users = users, group_list=group_list, projects=projects, user_list=user_list)
 
 @app.route('/portfolio', methods=['GET'])
 def portfolio():
@@ -127,6 +133,7 @@ def create_project():
         project_name = request.form['project_name']
         project_desc = request.form['project_desc']
 
+        # 여기서 그룹은 쓸대 없는 짓하고 있는거임..?
         g1 = request.form['group1']
         c1 = request.form['category1']
 
@@ -136,9 +143,22 @@ def create_project():
         g3 = request.form['group3']
         c3 = request.form['category3']
 
+        
+        # file 저장
+        file_key = None
+        if request.files['photo']:
+            post_data = request.files['photo']
+            filestream = post_data.read()
+            upload_data = Photo()
+            upload_data.photo = google.db.Blob(filestream)
+            upload_data.put()
+            file_key = str(upload_data.key())
+
+
         proj = Project(
                 title = project_name,
                 description = project_desc,
+                file_key = file_key
             )
 
         g1 = Group(

@@ -1,7 +1,7 @@
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{ url_for('test') }}">graduation project test..</a> 
+            <a class="navbar-brand" href="{{ url_for('main') }}">My portfolio</a> 
         </div>
         <ul class="nav navbar-nav">
             <li><a href="{{ url_for('join') }}">join</a></li>
@@ -9,6 +9,8 @@
             <li><a href="{{ url_for('make_log') }}">make logs</a></li>
             <li><a href="{{ url_for('make_comment') }}">make comments</a></li>
             <li><a href="{{ url_for('portfolio') }}">portfolio</a></li>
+
+            <li><a href="{{ url_for('test') }}">test</a></li>
 
             <li{% if active_tab == 'meeting' %} class="active"{% endif %}><a href="{{ url_for('meeting') }}">meeting</a></li>
             
