@@ -4,6 +4,7 @@
             <a class="navbar-brand" href="{{ url_for('main') }}">My portfolio</a> 
         </div>
         <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('my_project') }}">my projects</a></li>
             <li><a href="{{ url_for('join') }}">join</a></li>
             <li><a href="{{ url_for('create_project') }}">create project</a></li>
             <li><a href="{{ url_for('make_log') }}">make logs</a></li>
@@ -14,7 +15,13 @@
 
             <li{% if active_tab == 'meeting' %} class="active"{% endif %}><a href="{{ url_for('meeting') }}">meeting</a></li>
             
-        </ul>
 
+        </ul>
+        {% if g.user_id%}
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">{{g.user_id}}님 환영합니다.</a></li>
+          <li><a href="{{url_for('logout')}}">로그아웃</a></li>
+        </ul>
+        {% endif %}
     </div>
 </nav>

@@ -33,8 +33,8 @@ $(document).ready(function() {
   $(window).load( function() {
     $('#container').BlocksIt({
       numOfCol: 5,
-      offsetX: 8,
-      offsetY: 8
+      offsetX: 4,
+      offsetY: 4
     });
   });
   
@@ -62,8 +62,8 @@ $(document).ready(function() {
       $('#container').width(conWidth);
       $('#container').BlocksIt({
         numOfCol: col,
-        offsetX: 8,
-        offsetY: 8
+        offsetX: 4,
+        offsetY: 4
       });
     }
   });
@@ -78,10 +78,22 @@ $(document).ready(function() {
   
   <div id="container">
 
+    {% if is_mine %}
+    <div class="grid">
+      <div class="imgholder">
+        <center><a href="{{url_for('create_project')}}"><span class="glyphicon glyphicon-plus-sign" style=" font-size: 5em;"></span></a><center>
+      </div>
+      <center><strong>New project</strong></center>
+      <center><p>새로운 프로젝트를 생성</p></center>
+      <!-- <div class="meta">by j osborn</div> -->
+    </div>
+    {% endif %}
+
+
     {% for proj in projects %}
     <div class="grid">
       <div class="imgholder">
-        <img src="/show/{{proj.file_key}}" width='200'>
+        <img src="/show/{{proj.file_key}}">
       </div>
       <strong>{{proj.title}}</strong>
       <p>{{proj.description}}</p>

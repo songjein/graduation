@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, session, g
 from sqlalchemy import desc
 from apps import app, db
 
@@ -12,18 +12,71 @@ class Photo(google.db.Model):
 
 from apps.models import (User, Comment, Log, Group, Project)
 
-#
-# @index & article list
-#
+
+
+@app.before_request
+def before_request():
+    g.user_id = None
+    if 'user_id' in session:
+        g.user_id = session['user_id']
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def article_list():
 
     return redirect(url_for('login'))
 
-@app.route('/login')
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login/login.html')
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+        
+        # login success
+        session.permanent = True
+        session['user_id'] = user_id
+
+        return redirect(url_for('main'))
+
+    users = User.query.all()
+
+    return render_template('login/login.html', users=users)
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+
+@app.route('/join', methods=['GET', 'POST'])
+def join():
+    # 인증 아직 없음..
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+        pw = request.form['pw']
+        name = request.form['name']
+
+        user = User(
+                id = user_id,
+                password = pw,
+                name = name,
+            )
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash('join success!','success')
+
+        return redirect(url_for('login'))
+
+    # 유저 확인 위해 임시로 넣어놓은 코드
+    users = User.query.all()
+
+    return render_template('join/join.html', users = users)
+
 
 @app.route('/main')
 def main():
@@ -31,6 +84,14 @@ def main():
     projects = Project.query.all()
 
     return render_template('main/main.html', projects=projects)
+
+
+@app.route('/my_project')
+def my_project():
+    # 유저 정보로.. 
+    projects = Project.query.all()
+
+    return render_template('main/main.html', is_mine=True , projects=projects)
 
 
 @app.route('/test', methods=['GET', 'POST'])
@@ -102,29 +163,6 @@ def sendmsg():
 
     return ""
 
-
-@app.route('/join', methods=['GET', 'POST'])
-def join():
-
-    if request.method == 'POST':
-        user_id = request.form['user_id']
-        pw = request.form['pw']
-        name = request.form['name']
-
-        user = User(
-                id = user_id,
-                password = pw,
-                name = name,
-            )
-
-        db.session.add(user)
-        db.session.commit()
-
-        flash('submit success','success')
-
-    users = User.query.all()
-
-    return render_template('join/join.html', users = users)
 
 
 @app.route('/create_project', methods=['GET', 'POST'])
