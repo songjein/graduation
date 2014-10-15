@@ -95,6 +95,11 @@ def my_project():
 
     return render_template('main/main.html', is_mine=True , projects=projects)
 
+@app.route('/project_detail/<proj_id>')
+def project_detail(proj_id):
+    project = Project.query.get(proj_id)
+
+    return render_template('project_detail/project_detail.html', project=project)
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
@@ -135,12 +140,12 @@ def test():
 
     return render_template('test/test.html', users = users, group_list=group_list, projects=projects, user_list=user_list)
 
-@app.route('/portfolio', methods=['GET'])
-def portfolio():
+@app.route('/time_line', methods=['GET'])
+def time_line():
     
-    logs = Log.query.order_by(Log.date_created)
+    user = User.query.get(g.user_id)
 
-    return render_template('portfolio/portfolio.html', active_tab="portfolio", logs=logs)
+    return render_template('time_line/time_line.html', logs=user.logs)
 
 
 @app.route('/meeting', methods=['GET'])
@@ -239,16 +244,12 @@ def create_project():
        
     return render_template('create_project/create_project.html', projects = projects)
     
-@app.route('/make_log', methods=['GET', 'POST'])
-def make_log():
-    projects = Project.query.all()
-    users = User.query.all()
 
-    #원래는 프로젝트에 속한 사람을 뿌려줘야돼.
+
+@app.route('/make_log/<project_id>', methods=['GET', 'POST'])
+def make_log(project_id):
 
     if request.method == 'POST':
-        project_id = request.form['project']
-        user_id = request.form['user']
         title = request.form['title']
         content = request.form['content']
 
@@ -265,7 +266,7 @@ def make_log():
             
 
         project = Project.query.get(project_id)
-        user = User.query.get(user_id)
+        user = User.query.get(g.user_id)
 
         # 확신해도 되는건 project, user 제대로 들어감.
 
@@ -273,7 +274,7 @@ def make_log():
                 project = project,
                 project_id = project_id,
                 user = user,
-                user_id = user_id,
+                user_id = g.user_id,
                 title = title,
                 content = content,
                 file_key = file_key
@@ -282,10 +283,13 @@ def make_log():
         db.session.add(log)
         db.session.commit()
 
-        flash('submit success','success')
+        flash('write log success','success')
+
+        return redirect(url_for('project_detail', proj_id=project_id))
 
     logs = Log.query.all()
-    return render_template('make_log/make_log.html', projects = projects, users = users, logs = logs)
+    return render_template('make_log/make_log.html', logs = logs)
+
 
 @app.route('/show/<key>')
 def shows(key):

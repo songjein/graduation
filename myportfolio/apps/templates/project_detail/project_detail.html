@@ -78,46 +78,50 @@ $(document).ready(function() {
   
   <div id="container">
 
-    {% if is_mine %}
     <div class="grid">
       <div class="imgholder">
-        <center><a href="{{url_for('create_project')}}"><span class="glyphicon glyphicon-plus-sign" style=" font-size: 5em;"></span></a><center>
+        <img src="/show/{{project.file_key}}">
       </div>
-      <center><strong>New project</strong></center>
-      <center><p>새로운 프로젝트를 생성</p></center>
+      <center><strong>{{project.title}}</strong></center>
+      <center><p>{{project.description}}</p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
-    {% else %}
+
     <div class="grid">
       <div class="imgholder">
-        <center><a href="{{url_for('my_project')}}"><span class="glyphicon glyphicon-eye-open" style=" font-size: 5em;"></span></a><center>
+        <center><a href="{{url_for('meeting')}}"><span class="glyphicon glyphicon-list-alt" style=" font-size: 5em;"></span></a><center>
       </div>
-      <center><strong>My projects</strong></center>
-      <center><p>나의 프로젝트를 모아 보여줍니다.</p></center>
+      <center><strong>To do list</strong></center>
+      <center><p>팀원과의 실시간 회의를 통해서 To do list를 만듭니다.</p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
+
     <div class="grid">
       <div class="imgholder">
-        <center><a href="{{url_for('time_line')}}"><span class="glyphicon glyphicon-time" style=" font-size: 5em;"></span></a><center>
+        <center><a href="{{url_for('make_log', project_id=project.id)}}"><span class="glyphicon glyphicon-pencil" style=" font-size: 5em;"></span></a><center>
       </div>
-      <center><strong>Time line</strong></center>
-      <center><p>나의 활동을 타임라인 형태로 보여줍니다.</p></center>
+      <center><strong>Write log</strong></center>
+      <center><p>프로젝트의 로그를 기록합니다.</p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
-    {% endif %}
 
-
-    {% for proj in projects %}
     <div class="grid">
       <div class="imgholder">
-        <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><img src="/show/{{proj.file_key}}"></a>
+        <center><a href="#"><span class="glyphicon glyphicon-stats" style=" font-size: 5em;"></span></a><center>
       </div>
-      <strong>{{proj.title}}</strong>
-      <p>{{proj.description}}</p>
-      <div class="meta">{{proj.user_id}}</div>
+      <center><strong>Statistic</strong></center>
+      <center><p>참여도 및 활동 분포를 분석합니다.</p></center>
+      <!-- <div class="meta">by j osborn</div> -->
     </div>
-    {% endfor%}
 
+    <div class="grid">
+      <div class="imgholder">
+        <center><a href="#"><span class="glyphicon glyphicon-plus" style=" font-size: 4em;"></span><span class="glyphicon glyphicon-user" style=" font-size: 5em;"></span></a></center>
+      </div>
+      <center><strong>Add coworkers</strong></center>
+      <center><p>프로젝트 팀원을 추가합니다.</p></center>
+      <!-- <div class="meta">by j osborn</div> -->
+    </div>
   </div>
 </div>
 

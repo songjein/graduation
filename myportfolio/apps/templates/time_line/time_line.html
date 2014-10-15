@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+
+
+	<link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans:400,700' rel='stylesheet' type='text/css'>
+
+	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}"> CSS reset -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/stylefortimeline.css') }}"> <!-- Resource style -->
+	<script src="{{ url_for('static', filename='js/modernizr.js') }}"></script> <!-- Modernizr -->
+
+
+	<section id="cd-timeline" class="cd-container">
+
+	{% for log in logs%}
+
+			<div class="cd-timeline-block">
+				<div class="cd-timeline-img cd-picture">
+					<!-- <img src="{{ url_for('static', filename='images/cd-icon-picture.svg') }}" alt="Picture"> -->
+				</div> <!-- cd-timeline-img -->
+
+				<div class="cd-timeline-content">
+					<h2>{{log.title}}</h2>
+
+					{% if log.file_key%}
+				      <img src="/show/{{log.file_key}}" alt="사진 없음">
+				    {% else %}
+				      (사진 없음)
+				    {% endif%}
+				      <!-- {{log.project.id}}&nbsp;,&nbsp;
+				      {{log.user.id}}&nbsp;&nbsp; -->
+				    
+					<p>{{log.content}}</p>
+					<a href="#0" class="cd-read-more">Read more</a>
+					<span class="cd-date">{{log.date_created}}</span>
+				</div> <!-- cd-timeline-content -->
+			</div> <!-- cd-timeline-block -->
+	{% else %}
+	로그를 남겨주세요.
+	{% endfor %}
+
+	</section> <!-- cd-timeline -->
+
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script> <!-- Resource jQuery -->
+
+{% endblock %}

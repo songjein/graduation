@@ -2,40 +2,9 @@
 
 {% block contents %}
 
-{% if projects%}
 
-<h1>Project-log</h1>
+<h1>로그를 남기세요</h1>
 <form role="form" enctype="multipart/form-data" method='POST'>
-  <div class="form-group has-success">
-    <label> 프로젝트 목록 </label>
-    <select multiple name="project" class="form-control">
-    {% for project in projects%}
-      <option value="{{project.id}}">
-      {{project.id}},
-      {{project.title}},
-      {{project.description}}
-      {{project.date_created}},
-      (
-        {% for group in project.groups%}
-          {{group.title}},
-        {% endfor %}
-      )
-      </option>
-    {% endfor %}
-    </select>
-  </div>
-  <div class="form-group has-success">
-    <label> 로그 쓸 유저 선택 </label>
-    <select name="user" multiple class="form-control">
-    {% for user in users%}
-      <option value="{{user.id}}">
-      {{user.id}} &nbsp;,&nbsp;
-      {{user.name}}&nbsp;,&nbsp;
-      {{user.join_date}}
-      </option>
-    {% endfor %}
-    </select>
-  </div>
   <div class="form-group has-warning">
     <input type="text" class="form-control" placeholder="로그 제목" name="title">
   </div>
@@ -46,28 +15,12 @@
     <p>사진 : <input type="file" name="photo"></p>
   </div>
   
-  <button type="submit" class="btn btn-default">제출</button>
+  <button type="submit" class="btn btn-default">쓰기</button>
 </form>
 
-{% else %}
-  {{'프로젝트 목록이 없습니다.'}}
-{% endif %}
-
 <hr>
-<!-- <div class="form-group has-success">
-    <label> 남긴 로그 목록(제목,내용,프로젝트아이디,유저아이디) </label>
-    <select multiple class="form-control">
-    {% for log in logs%}
-      <option>
-      {{log.title}} &nbsp;,&nbsp;
-      {{log.content}}&nbsp;,&nbsp;
-      {{log.project.id}}&nbsp;,&nbsp;
-      {{log.user.id}}&nbsp;&nbsp;
-      </option>
-    {% endfor %}
-    </select>
-  </div> -->
-{% for log in logs%}
+
+<!-- {% for log in logs%}
     <div>
       {{log.title}} &nbsp;,&nbsp;
       {{log.content}}&nbsp;,&nbsp;
@@ -79,7 +32,7 @@
       (사진 없음)
       {% endif%}
     </div>
-{% endfor %}
+{% endfor %} -->
 
 
 {% endblock%}

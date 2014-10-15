@@ -11,7 +11,7 @@ class Config:
     # Set secret key to use session
     SECRET_KEY = "likelion-flaskr-secret-key"
     debug = False
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=2)
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
 
 
 class Production(Config):

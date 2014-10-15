@@ -1,23 +1,10 @@
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{{ url_for('main') }}">My portfolio</a> 
+            <a class="navbar-brand" href="{{ url_for('main') }}">My portfolio <span class="glyphicon glyphicon-book"> </a>
+            
         </div>
-        <ul class="nav navbar-nav">
-            <li><a href="{{ url_for('my_project') }}">my projects</a></li>
-            <!-- <li><a href="{{ url_for('join') }}">join</a></li> -->
-            <!-- <li><a href="{{ url_for('create_project') }}">create project</a></li> -->
-            <li><a href="{{ url_for('make_log') }}">make logs</a></li>
-            <li><a href="{{ url_for('make_comment') }}">make comments</a></li>
-            <li><a href="{{ url_for('portfolio') }}">portfolio</a></li>
-            
-            <!-- 여긴 걍 직접 접속해.-->
-            <!-- <li><a href="{{ url_for('test') }}">test</a></li> -->
-
-            <li{% if active_tab == 'meeting' %} class="active"{% endif %}><a href="{{ url_for('meeting') }}">meeting</a></li>
-            
-
-        </ul>
+        
         {% if g.user_id%}
         <ul class="nav navbar-nav navbar-right">
           <li><a href="#">{{g.user_id}}님 환영합니다.</a></li>
