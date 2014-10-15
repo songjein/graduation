@@ -89,7 +89,9 @@ def main():
 @app.route('/my_project')
 def my_project():
     # 유저 정보로.. 
-    projects = Project.query.all()
+    user = User.query.get(g.user_id)
+
+    projects = user.projects
 
     return render_template('main/main.html', is_mine=True , projects=projects)
 
@@ -167,6 +169,10 @@ def sendmsg():
 
 @app.route('/create_project', methods=['GET', 'POST'])
 def create_project():
+
+    if 'user_id' not in session:
+        return '로그인 안됐음'
+
     if request.method == 'POST':
         project_name = request.form['project_name']
         project_desc = request.form['project_desc']
@@ -193,10 +199,15 @@ def create_project():
             file_key = str(upload_data.key())
 
 
+        # 현재 로그인 한 사람의 아이디를 저장한다. 프로젝트 생성자로
+        user = User.query.get(g.user_id)
+
         proj = Project(
                 title = project_name,
                 description = project_desc,
-                file_key = file_key
+                file_key = file_key,
+                user_id = g.user_id,
+                user = user,
             )
 
         g1 = Group(
@@ -220,7 +231,9 @@ def create_project():
         db.session.add(g3)
         db.session.commit()
 
-        flash('submit success','success')
+        flash('create project success','success')
+
+        return redirect(url_for('my_project'))
 
     projects = Project.query.all()
        

@@ -20,12 +20,12 @@ class Project(db.Model):
 
     file_key = db.Column(db.String(255))
 
-    # # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
-    # user_id = db.Column(db.String(255))
-    # user = db.relationship('User', 
-    #     foreign_keys=[user_id],
-    #     primaryjoin="Project.user_id==User.id",
-    #     backref=db.backref('projects', cascade='all, delete-orphan', lazy='dynamic'))
+    # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
+    user_id = db.Column(db.String(255))
+    user = db.relationship('User', 
+        foreign_keys=[user_id],
+        primaryjoin="Project.user_id==User.id",
+        backref=db.backref('projects', cascade='all, delete-orphan', lazy='dynamic'))
 
     # hoho = db.Column(db.String(23))
 
