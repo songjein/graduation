@@ -17,6 +17,6 @@ class Config:
 class Production(Config):
     debug = True
     CSRF_ENABLED = False
-    ADMIN = "jeinsong100@gmail.com"
-    SQLALCHEMY_DATABASE_URI = 'mysql+gaerdbms:///myportfolio?instance=jein-song:js-instance'
+    ADMIN = "jeinsong200@gmail.com"
+    SQLALCHEMY_DATABASE_URI = 'mysql+gaerdbms:///portfolio?instance=do-portfolio:jein-song2'
     migration_directory = 'migrations'

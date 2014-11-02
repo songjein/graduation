@@ -4,7 +4,7 @@ models.py
 
 """
 from apps import db
-
+from datetime import datetime
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)

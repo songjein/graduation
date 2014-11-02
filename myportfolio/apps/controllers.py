@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from facebook import get_user_from_cookie, GraphAPI
 from flask import render_template, request, redirect, url_for, flash, session, g
 from sqlalchemy import desc
 from apps import app, db
@@ -11,8 +12,6 @@ class Photo(google.db.Model):
     photo = google.db.BlobProperty()
 
 from apps.models import (User, Comment, Log, Group, Project)
-
-
 
 @app.before_request
 def before_request():
@@ -99,7 +98,13 @@ def my_project():
 def project_detail(proj_id):
     project = Project.query.get(proj_id)
 
-    return render_template('project_detail/project_detail.html', project=project)
+    #최신순 이거 야매아니야...?
+    # logs = project.logs.reverse()
+
+    #filter로 하면 안된다.
+    logs = Log.query.order_by(desc(Log.date_created)).filter_by(project_id=proj_id)
+
+    return render_template('project_detail/project_detail.html', project=project , logs=logs)
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
@@ -143,9 +148,9 @@ def test():
 @app.route('/time_line', methods=['GET'])
 def time_line():
     
-    user = User.query.get(g.user_id)
+    logs = Log.query.order_by(desc(Log.date_created)).filter_by(user_id=g.user_id)
 
-    return render_template('time_line/time_line.html', logs=user.logs)
+    return render_template('time_line/time_line.html', logs=logs)
 
 
 @app.route('/meeting', methods=['GET'])
@@ -166,10 +171,27 @@ def sendmsg():
     chat_msg = request.args.get('msg_data')
 
 
-    p['test_channel'].trigger('event_msg', {'name': chat_name, 'msg': chat_msg})
+    # 이 채널을 유동적으로.
+    p['test_channel'].trigger('chat_msg', {'name': chat_name, 'msg': chat_msg})
 
     return ""
 
+@app.route('/add_list', methods=['GET'])
+def add_list():
+
+    p = pusher.Pusher(
+      app_id='85292',
+      key='2f1737dadfe8bacfb3a1',
+      secret='f155f7d0a772622f9a67'
+    )
+
+    list_item = request.args.get('list_item')
+
+
+    # 이 채널을 유동적으로.
+    p['test_channel'].trigger('add_list', {'list_item': list_item})
+
+    return ""
 
 
 @app.route('/create_project', methods=['GET', 'POST'])

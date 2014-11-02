@@ -58,7 +58,7 @@
   <div class="container" style="padding-top:10px">
     <div class="row" >
       <div class="form-group has-warning col-md-2">
-        <input type="text" class="form-control" id="chat_name" placeholder="name">
+        <input type="text" class="form-control" id="chat_name" disabled value="{{g.user_id}}" >
       </div>
       <div class="form-group has-success col-md-8">
         <input type="text" class="form-control" id="chat_msg" placeholder="message">
@@ -109,9 +109,9 @@ $(function() {
 
     // code here
     var pusher = new Pusher('2f1737dadfe8bacfb3a1')
-    var channel = pusher.subscribe('test_channel')
+    var channel = pusher.subscribe('test_channel')  // 이 채널이 템플릿을 통해서 바뀌어야함.
 
-    channel.bind('event_msg', function(data){
+    channel.bind('chat_msg', function(data){
       // $('#chatpanel').append('<h3>' + data.name + " : " + data.msg + '</h3>')
 
       // tmp = $('<h3></h3>').html(data.name + " : " + data.msg)
@@ -122,14 +122,10 @@ $(function() {
       // 근데 드래거블이 li전체에 걸쳐있고.. this가 이거 전체를 의미해서 전체가 검은색으로 되야할텐데..
     })
 
-    $( "#to_do_list ol" ).droppable({
-      activeClass: "ui-state-default",
-      hoverClass: "ui-state-hover",
-      accept: ":not(.ui-sortable-helper)",
-      drop: function( event, ui ) {
-        $( this ).find( ".placeholder" ).remove();
-        $( "<li></li>" ).text( ui.draggable.find('span:eq(1)').text() )
-                        .appendTo( this )
+    channel.bind('add_list', function(data){
+      $( "#to_do_list ol" ).find( ".placeholder" ).remove();
+      $( "<li></li>" ).text( data.list_item )
+                        .appendTo( "#to_do_list ol" )
                         .dblclick(function(){
                           // open modal
                           $('#myModal').modal()
@@ -142,6 +138,35 @@ $(function() {
                             $current_item.text($('.modal-body textarea').val())
                           })
                         })
+    })
+
+
+    $( "#to_do_list ol" ).droppable({
+      activeClass: "ui-state-default",
+      hoverClass: "ui-state-hover",
+      accept: ":not(.ui-sortable-helper)",
+      drop: function( event, ui ) {
+        // $( this ).find( ".placeholder" ).remove();
+        // $( "<li></li>" ).text( ui.draggable.find('span:eq(1)').text() )
+        //                 .appendTo( this )
+        //                 .dblclick(function(){
+        //                   // open modal
+        //                   $('#myModal').modal()
+        //                   // get the content of the current list item
+        //                   $current_item = $(this)
+        //                   $('.modal-body textarea').val($current_item.text())
+        //                   // if  click save button..
+        //                   $('.modal-footer .save-btn').click(function(){
+                              
+        //                     $current_item.text($('.modal-body textarea').val())
+        //                   })
+        //                 })
+
+        // 다른 사람들에게도 전달
+        $.get('/add_list', {
+          list_item: ui.draggable.find('span:eq(1)').text()
+        }, function(data){})
+
       }
     }).sortable({
       items: "li:not(.placeholder)",
