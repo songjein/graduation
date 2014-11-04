@@ -88,12 +88,15 @@ $(document).ready(function() {
       </div>
       <center><strong>{{project.title}}</strong></center>
       <center><p>{{project.description}}</p></center>
+      <center><p style="color:gray">구성원: <span style="font-weight:bold; color:blue">{{project.user_id}}</span>
+        {% for member in project.members%}{{member.user_id}},{% endfor %}
+      </p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
 
     <div class="grid menu_grid">
       <div class="imgholder">
-        <center><a href="{{url_for('meeting')}}"><span class="glyphicon glyphicon-list-alt" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
+        <center><a href="{{url_for('meeting', proj_id = project.id)}}"><span class="glyphicon glyphicon-list-alt" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
       </div>
       <center><strong>To do list</strong></center>
       <center><p>팀원과의 실시간 회의를 통해서 To do list를 만듭니다.</p></center>
@@ -111,7 +114,7 @@ $(document).ready(function() {
 
     <div class="grid menu_grid">
       <div class="imgholder">
-        <center><a href="#"><span class="glyphicon glyphicon-stats" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
+        <center><a href="{{url_for('statistics', proj_id=project.id)}}"><span class="glyphicon glyphicon-stats" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
       </div>
       <center><strong>Statistic</strong></center>
       <center><p>참여도 및 활동 분포를 분석합니다.</p></center>
@@ -120,7 +123,7 @@ $(document).ready(function() {
 
     <div class="grid menu_grid">
       <div class="imgholder">
-        <center><a href="#"><span class="glyphicon glyphicon-plus" style="color: rgba(255,255,255, 0.9); font-size: 4em;"></span><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
+        <center><a href="{{url_for('add_member_to', proj_id=project.id)}}"><span class="glyphicon glyphicon-plus" style="color: rgba(255,255,255, 0.9); font-size: 4em;"></span><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
       </div>
       <center><strong>Add coworkers</strong></center>
       <center><p>프로젝트 팀원을 추가합니다.</p></center>
@@ -131,8 +134,7 @@ $(document).ready(function() {
 
 
 
-
-
+<hr>
 
 
 
@@ -164,7 +166,7 @@ $(document).ready(function() {
               {{log.user.id}}&nbsp;&nbsp; -->
             
           <p>{{log.content}}</p>
-          <a href="#0" class="cd-read-more">Read more</a>
+          <a href="{{url_for('log_detail', log_id=log.id)}}" class="cd-read-more">Read more</a>
           <span class="cd-date">{{log.date_created}}</span>
         </div> <!-- cd-timeline-content -->
       </div> <!-- cd-timeline-block -->

@@ -95,15 +95,28 @@
 <script>
 
 
+// 리스트 아이템을 하나의 스트링으로 만들어 준다.
 $(function(){
   $('#record_btn').click(function(){
-    output = '';
-    $('ol li').each(function(index, item){
-      output += $('ol li').eq(index).text() + ','
-    })
-    alert(output)
+    alert(getListString());
+
+    $.get('/save_list/{{project.id}}', {
+          list_string : getListString()
+        }, function(data){
+          alert('To-do-list가 성공적으로 저장되었습니다!')
+        })  
   })
 })
+
+function getListString(){
+    output = '';
+    $('ol li').each(function(index, item){
+      output += $('ol li').eq(index).text() + '*&*'
+    })
+    return output;
+}
+
+
 
 $(function() {
 
@@ -111,6 +124,9 @@ $(function() {
     var pusher = new Pusher('2f1737dadfe8bacfb3a1')
     var channel = pusher.subscribe('test_channel')  // 이 채널이 템플릿을 통해서 바뀌어야함.
 
+
+
+    // 채팅 메시지 브로캐스트
     channel.bind('chat_msg', function(data){
       // $('#chatpanel').append('<h3>' + data.name + " : " + data.msg + '</h3>')
 
@@ -118,27 +134,53 @@ $(function() {
       // $('<div></div>').append(tmp).appendTo('#chatpanel').draggable()
 
       //https://www.google.co.kr/search?q=bootstrap+button+size&oq=bootstrap+button+size&aqs=chrome..69i57j0l5.2851j0j4&sourceid=chrome&es_sm=122&ie=UTF-8#newwindow=1&q=change%20css%20while%20dragging
-      $('<li></li>').html('<span class="username" style="color:' +  getUsernameColor(data.name) +'">' + data.name + '</span> : <span class="usermsg">' + data.msg + '</span>' ).appendTo('#chatpanel').draggable({revert:true , helper:"clone"/*, start: function(event, ui) { $(this).css("color", 'black'); },  stop: function(event, ui) { $(this).css("color", "white"); }*/ });
+      $('<li></li>').html('<span class="username" style="color:' +  getUsernameColor(data.name) +'">' + data.name + '</span> : <span class="usermsg">' + data.msg + '</span>' ).appendTo('#chatpanel').draggable({revert:true , helper:"clone"/*, start: function(event, ui) { $(this).css("color", 'black'); },  stop: function(event, ui) { $(this).css("color", "white"); }*/ }).hide().fadeIn(550, 'swing');;
       // 근데 드래거블이 li전체에 걸쳐있고.. this가 이거 전체를 의미해서 전체가 검은색으로 되야할텐데..
     })
 
+
+
+    // 리스트 추가 브로드캐스트
     channel.bind('add_list', function(data){
       $( "#to_do_list ol" ).find( ".placeholder" ).remove();
       $( "<li></li>" ).text( data.list_item )
-                        .appendTo( "#to_do_list ol" )
-                        .dblclick(function(){
-                          // open modal
-                          $('#myModal').modal()
-                          // get the content of the current list item
-                          $current_item = $(this)
-                          $('.modal-body textarea').val($current_item.text())
-                          // if  click save button..
-                          $('.modal-footer .save-btn').click(function(){
-                              
-                            $current_item.text($('.modal-body textarea').val())
-                          })
+                      .appendTo( "#to_do_list ol" )
+                      .dblclick(function(){
+                        // open modal
+                        $('#myModal').modal()
+                        // get the content of the current list item
+                        $current_item = $(this)
+                        $('.modal-body textarea').val($current_item.text())
+                        // if  click save button..
+                        $('.modal-footer .save-btn').click(function(){
+                            
+                          $current_item.text($('.modal-body textarea').val())
                         })
+                      })
+                      .hide().fadeIn(550, 'swing');
+                      
     })
+
+
+
+    // 리스트 업데이트 브로드캐스트
+    channel.bind('update_list', function(data){
+      // alert("hello: " + data.list_string)
+      list_arr = data.list_string.split("*&*");
+      list_arr.pop(); // 맨마지막은 빈칸이라서..
+
+      // 현재 리스트를 비워주고 (.empty()를 쓰면 자식이 비워진다.)
+      $('#to_do_list ol').empty();
+
+      $.each(list_arr, function(index, value) { 
+        // result += (index + 1) + ': ' + value + "\n";
+        // 하나하나 추가해준다.
+        $( "<li></li>" ).text( value ).appendTo( "#to_do_list ol" ).hide().fadeIn(550, 'swing');
+      });
+
+    })
+
+
 
 
     $( "#to_do_list ol" ).droppable({
@@ -174,7 +216,14 @@ $(function() {
         // gets added unintentionally by droppable interacting with sortable
         // using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
         $( this ).removeClass( "ui-state-default" );
+      },
+      update: function( event, ui ) {
+        // 변경이 일어나면 그 결과를 통째로 서버로 전송한다.
+        $.get('/update_list', {
+          list_string : getListString()
+        }, function(data){})    
       }
+
     });
 
 

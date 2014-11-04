@@ -11,7 +11,7 @@ import google.appengine.ext as google
 class Photo(google.db.Model):
     photo = google.db.BlobProperty()
 
-from apps.models import (User, Comment, Log, Group, Project)
+from apps.models import (User, Comment, Log, Group, Project, Member)
 
 @app.before_request
 def before_request():
@@ -94,6 +94,24 @@ def my_project():
 
     return render_template('main/main.html', is_mine=True , projects=projects)
 
+@app.route('/delete_project', methods=['GET', 'POST'] )
+def delete_project():
+
+    if request.method == 'POST':
+        project_id = request.form['project_id']
+        project = Project.query.get(project_id)
+        db.session.delete(project)
+        db.session.commit()
+
+        flash('delete success', 'success')
+
+    # 유저 정보로.. 
+    user = User.query.get(g.user_id)
+    projects = user.projects
+
+    return render_template('delete_project/delete_project.html' , projects=projects)
+
+
 @app.route('/project_detail/<proj_id>')
 def project_detail(proj_id):
     project = Project.query.get(proj_id)
@@ -105,6 +123,42 @@ def project_detail(proj_id):
     logs = Log.query.order_by(desc(Log.date_created)).filter_by(project_id=proj_id)
 
     return render_template('project_detail/project_detail.html', project=project , logs=logs)
+
+@app.route('/statistics/<proj_id>')
+def statistics(proj_id):
+
+    project = Project.query.get(proj_id)
+
+    return render_template('statistics/statistics.html', project= project)
+
+@app.route('/add_member_to/<proj_id>', methods=['GET', 'POST'])
+def add_member_to(proj_id):
+
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+        user = User.query.get(user_id)
+
+        project = Project.query.get(proj_id)
+
+        #원랜 다 안써도 되지 않나? 자동으로 채워주는 부분이 어디까진지 몰라서 다쓴다.
+        member = Member(
+                user = user,
+                user_id = user_id,
+                project = project,
+                project_id = proj_id,
+            )
+        db.session.add(member)
+        db.session.commit()
+
+        flash('add success!','success')
+
+        return redirect(url_for('project_detail', proj_id=proj_id))
+
+    users = User.query.all()
+
+    return render_template('add_member/add_member.html', users= users)
+
+
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
@@ -151,47 +205,6 @@ def time_line():
     logs = Log.query.order_by(desc(Log.date_created)).filter_by(user_id=g.user_id)
 
     return render_template('time_line/time_line.html', logs=logs)
-
-
-@app.route('/meeting', methods=['GET'])
-def meeting():
-    return render_template('meeting/meeting.html', active_tab="meeting")
-
-
-@app.route('/send', methods=['GET'])
-def sendmsg():
-
-    p = pusher.Pusher(
-      app_id='85292',
-      key='2f1737dadfe8bacfb3a1',
-      secret='f155f7d0a772622f9a67'
-    )
-
-    chat_name = request.args.get('name_data')
-    chat_msg = request.args.get('msg_data')
-
-
-    # 이 채널을 유동적으로.
-    p['test_channel'].trigger('chat_msg', {'name': chat_name, 'msg': chat_msg})
-
-    return ""
-
-@app.route('/add_list', methods=['GET'])
-def add_list():
-
-    p = pusher.Pusher(
-      app_id='85292',
-      key='2f1737dadfe8bacfb3a1',
-      secret='f155f7d0a772622f9a67'
-    )
-
-    list_item = request.args.get('list_item')
-
-
-    # 이 채널을 유동적으로.
-    p['test_channel'].trigger('add_list', {'list_item': list_item})
-
-    return ""
 
 
 @app.route('/create_project', methods=['GET', 'POST'])
@@ -312,6 +325,34 @@ def make_log(project_id):
     logs = Log.query.all()
     return render_template('make_log/make_log.html', logs = logs)
 
+@app.route('/log_detail/<log_id>', methods=['GET', 'POST'])
+def log_detail(log_id):
+    log = Log.query.get(log_id)
+
+    if request.method == 'POST':
+        log_id = request.form['log_id']
+        user_id = request.form['user_id']
+        is_like = False
+        if request.form['islike'] == 'like_with_feed':
+            is_like = True
+        content = request.form['content']
+
+
+        log = Log.query.get(log_id)
+        user = User.query.get(user_id)
+
+        comment = Comment(
+                log = log,
+                user = user,
+                is_like = is_like,
+                content = content,
+            )
+        db.session.add(comment)
+        db.session.commit()
+
+        flash('comment write success','success')
+
+    return render_template('log_detail/log_detail.html', log=log)
 
 @app.route('/show/<key>')
 def shows(key):
@@ -319,7 +360,7 @@ def shows(key):
     return app.response_class(upload_data.photo)
 
 
-@app.route('/make_comment', methods=['GET', 'POST'])
+@app.route('/make_comment/', methods=['GET', 'POST'])
 def make_comment():
      # projects = Project.query.all()
     users = User.query.all()
@@ -380,3 +421,82 @@ def page_not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('error/500.html'), 500
+
+
+
+
+
+# #
+# # *Pusher & meeting application
+# #
+
+@app.route('/meeting/<proj_id>', methods=['GET'])
+def meeting(proj_id):
+
+    project = Project.query.get(proj_id)
+
+    return render_template('meeting/meeting.html', project=project)
+
+
+@app.route('/save_list/<proj_id>')
+def save_list(proj_id):
+    list_str = request.args['list_string']
+
+    # 해당 프로젝트의 해달 컬럼에 저장
+    proj = Project.query.get(proj_id)
+    proj.schedule = list_str
+    db.session.commit()
+    
+    return "success"
+
+@app.route('/send', methods=['GET'])
+def sendmsg():
+
+    p = pusher.Pusher(
+      app_id='85292',
+      key='2f1737dadfe8bacfb3a1',
+      secret='f155f7d0a772622f9a67'
+    )
+
+    chat_name = request.args.get('name_data')
+    chat_msg = request.args.get('msg_data')
+
+
+    # 이 채널을 유동적으로.
+    p['test_channel'].trigger('chat_msg', {'name': chat_name, 'msg': chat_msg})
+
+    return ""
+
+@app.route('/add_list', methods=['GET'])
+def add_list():
+
+    p = pusher.Pusher(
+      app_id='85292',
+      key='2f1737dadfe8bacfb3a1',
+      secret='f155f7d0a772622f9a67'
+    )
+
+    list_item = request.args.get('list_item')
+
+
+    # 이 채널을 유동적으로.
+    p['test_channel'].trigger('add_list', {'list_item': list_item})
+
+    return ""
+
+@app.route('/update_list', methods=['GET'])
+def update_list():
+
+    p = pusher.Pusher(
+      app_id='85292',
+      key='2f1737dadfe8bacfb3a1',
+      secret='f155f7d0a772622f9a67'
+    )
+
+    list_string = request.args.get('list_string')
+
+
+    # 이 채널을 유동적으로.
+    p['test_channel'].trigger('update_list', {'list_string': list_string})
+
+    return ""    

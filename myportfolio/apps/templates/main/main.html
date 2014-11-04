@@ -91,6 +91,14 @@ $(document).ready(function() {
       <center><p>새로운 프로젝트를 생성</p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
+    <div class="grid menu_grid">
+      <div class="imgholder">
+        <center><a href="{{url_for('delete_project')}}"><span class="glyphicon glyphicon-trash" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
+      </div>
+      <center><strong>Modify project</strong></center>
+      <center><p>프로젝트의 수정 및 삭제</p></center>
+      <!-- <div class="meta">by j osborn</div> -->
+    </div>
     {% else %}
     <div class="grid menu_grid">
       <div class="imgholder">
@@ -112,7 +120,12 @@ $(document).ready(function() {
 
 
     {% for proj in projects %}
-    <div class="grid">
+
+    <div class="grid"
+    {% if proj.user_id == g.user_id%}
+      style="background-color:#FFFFB4"
+    {% endif %}
+    >
       <div class="imgholder">
         <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><img src="/show/{{proj.file_key}}"></a>
       </div>

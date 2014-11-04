@@ -18,6 +18,8 @@ class Project(db.Model):
 
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
+    schedule = db.Column(db.Text(), default=None)
+
     file_key = db.Column(db.String(255))
 
     # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
@@ -27,7 +29,21 @@ class Project(db.Model):
         primaryjoin="Project.user_id==User.id",
         backref=db.backref('projects', cascade='all, delete-orphan', lazy='dynamic'))
 
-    # hoho = db.Column(db.String(23))
+
+# 구성원 판단시 Project.user_id (생성자) + Participants.user_id(구성원)
+class Member(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.String(255))
+    user = db.relationship('User',
+        foreign_keys=[user_id],
+        primaryjoin="Member.user_id==User.id") #User쪽에서 일로 넘어올 필요는 x 
+
+    project_id = db.Column(db.Integer)
+    project = db.relationship('Project',
+        foreign_keys=[project_id],
+        primaryjoin="Member.project_id==Project.id",
+        backref=db.backref('members', cascade='all, delete-orphan', lazy='dynamic'))
 
 
 class Group(db.Model):
