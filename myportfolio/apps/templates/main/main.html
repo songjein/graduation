@@ -124,6 +124,12 @@ $(document).ready(function() {
     <div class="grid"
     {% if proj.user_id == g.user_id%}
       style="background-color:#FFFFB4"
+    {% else %}
+      {% for member in proj.members%}
+        {% if g.user_id == member.user_id%}
+          style="background-color:#E4F7BA"
+        {% endif %}
+      {% endfor%}
     {% endif %}
     >
       <div class="imgholder">

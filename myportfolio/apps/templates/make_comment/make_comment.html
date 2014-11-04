@@ -22,23 +22,4 @@
 </form>
 
 
-<hr>
-
-{% if comments %}
-<div class="form-group has-success">
-    <label> 커멘트 목록 (커멘트아이디,로그아이디,유저아이디,내용,추천?) </label>
-    <select multiple class="form-control">
-    {% for comment in comments %}
-      <option>
-      {{comment.id}}&nbsp;,&nbsp;
-      {{comment.log.id}} &nbsp;,&nbsp;
-      {{comment.user.id}}&nbsp;,&nbsp;
-      {{comment.content}}&nbsp;,&nbsp;
-      {{comment.is_like}}&nbsp;&nbsp;
-      </option>
-    {% endfor %}
-    </select>
-  </div>
-{% endif %}
-
 {% endblock%}

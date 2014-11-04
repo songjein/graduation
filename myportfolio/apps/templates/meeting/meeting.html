@@ -15,7 +15,7 @@
 
   #chatpanel li {list-style: none; font-size:1.5em;  font-weight: bold; z-index:10;}
 
-  #to_do_list li {font-size: :1.5em; font-weight: bold}
+  #to_do_list li {font-size: :2em; font-weight: bold}
 
   button { font-weight: bold; }
 
@@ -95,10 +95,49 @@
 <script>
 
 
-// 리스트 아이템을 하나의 스트링으로 만들어 준다.
 $(function(){
+  
+  // 최초에 한번 요청을 해서 리스트가 존재하는지 확인 후 업데이트
+  $.get('/init_list/{{project.id}}', {
+        }, function(data){
+
+            list_arr = data.split("*&*");
+            list_arr.pop(); // 맨마지막은 빈칸이라서..
+
+            // 현재 리스트를 비워주고 (.empty()를 쓰면 자식이 비워진다.)
+            $('#to_do_list ol').empty();
+
+            $.each(list_arr, function(index, value) { 
+              // result += (index + 1) + ': ' + value + "\n";
+              // 하나하나 추가해준다.
+              $( "<li></li>" ).text( value )
+                              .appendTo( "#to_do_list ol" )
+                              .dblclick(function(){
+                                // open modal
+                                $('#myModal').modal()
+                                // get the content of the current list item
+                                $current_item = $(this)
+                                $('.modal-body textarea').val($current_item.text())
+                                // if  click save button..
+                                $('.modal-footer .save-btn').click(function(){
+                                    
+                                  $current_item.text($('.modal-body textarea').val())
+                                })
+                              })
+                            .hide().fadeIn(550, 'swing');
+      });
+
+
+
+
+
+
+
+
+        })  
+  
   $('#record_btn').click(function(){
-    alert(getListString());
+    // alert(getListString());
 
     $.get('/save_list/{{project.id}}', {
           list_string : getListString()
@@ -108,6 +147,8 @@ $(function(){
   })
 })
 
+
+// 리스트 아이템을 하나의 스트링으로 만들어 준다.
 function getListString(){
     output = '';
     $('ol li').each(function(index, item){
@@ -165,6 +206,9 @@ $(function() {
 
     // 리스트 업데이트 브로드캐스트
     channel.bind('update_list', function(data){
+
+      // if (data.list_String == "")
+
       // alert("hello: " + data.list_string)
       list_arr = data.list_string.split("*&*");
       list_arr.pop(); // 맨마지막은 빈칸이라서..
@@ -175,7 +219,21 @@ $(function() {
       $.each(list_arr, function(index, value) { 
         // result += (index + 1) + ': ' + value + "\n";
         // 하나하나 추가해준다.
-        $( "<li></li>" ).text( value ).appendTo( "#to_do_list ol" ).hide().fadeIn(550, 'swing');
+        $( "<li></li>" ).text( value )
+                        .appendTo( "#to_do_list ol" )
+                        .dblclick(function(){
+                          // open modal
+                          $('#myModal').modal()
+                          // get the content of the current list item
+                          $current_item = $(this)
+                          $('.modal-body textarea').val($current_item.text())
+                          // if  click save button..
+                          $('.modal-footer .save-btn').click(function(){
+                              
+                            $current_item.text($('.modal-body textarea').val())
+                          })
+                        })
+                      .hide().fadeIn(550, 'swing');
       });
 
     })

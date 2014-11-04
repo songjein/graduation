@@ -82,6 +82,14 @@ def main():
     
     projects = Project.query.all()
 
+    # result = ''
+    # for project in projects:
+    #     result += str(project.id) + " : "
+    #     for member in project.members:
+    #         result += member.user_id
+    #     result += '<br>'
+    # return result;
+
     return render_template('main/main.html', projects=projects)
 
 
@@ -122,7 +130,14 @@ def project_detail(proj_id):
     #filter로 하면 안된다.
     logs = Log.query.order_by(desc(Log.date_created)).filter_by(project_id=proj_id)
 
-    return render_template('project_detail/project_detail.html', project=project , logs=logs)
+    list_string = "";
+    if project.schedule:  
+        list_string = project.schedule
+
+    list_item = list_string.split('*&*')
+    list_item.pop()
+
+    return render_template('project_detail/project_detail.html', project=project , logs=logs, list_item=list_item)
 
 @app.route('/statistics/<proj_id>')
 def statistics(proj_id):
@@ -437,6 +452,23 @@ def meeting(proj_id):
 
     return render_template('meeting/meeting.html', project=project)
 
+@app.route('/init_list/<proj_id>', methods=['GET'])
+def init_list(proj_id):
+
+    p = pusher.Pusher(
+      app_id='85292',
+      key='2f1737dadfe8bacfb3a1',
+      secret='f155f7d0a772622f9a67'
+    )
+
+    project = Project.query.get(proj_id)
+
+    list_sring = ""
+    if project.schedule:  
+        list_string = project.schedule
+
+    return list_string
+
 
 @app.route('/save_list/<proj_id>')
 def save_list(proj_id):
@@ -446,7 +478,7 @@ def save_list(proj_id):
     proj = Project.query.get(proj_id)
     proj.schedule = list_str
     db.session.commit()
-    
+
     return "success"
 
 @app.route('/send', methods=['GET'])
