@@ -344,6 +344,64 @@ def make_log(project_id):
     logs = Log.query.all()
     return render_template('make_log/make_log.html', logs = logs)
 
+
+@app.route('/make_log_delete_sche/<project_id>/<item_num>', methods=['GET', 'POST'])
+def make_log_delete_sche(project_id, item_num):
+
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+
+        # file 저장
+        file_key = None
+        if request.files['photo']:
+            post_data = request.files['photo']
+            filestream = post_data.read()
+            upload_data = Photo()
+            upload_data.photo = google.db.Blob(filestream)
+            upload_data.put()
+            file_key = str(upload_data.key())
+            
+
+        project = Project.query.get(project_id)
+        user = User.query.get(g.user_id)
+
+        # 확신해도 되는건 project, user 제대로 들어감.
+
+        log = Log(
+                project = project,
+                project_id = project_id,
+                user = user,
+                user_id = g.user_id,
+                title = title,
+                content = content,
+                file_key = file_key
+            )
+
+        db.session.add(log)
+        db.session.commit()
+
+        flash('write log success(delete shchedule)','success')
+
+
+        # 해당 계획 완료이므로 스케쥴 스트링에서 꺼내와 쪼갠후, 해당 번호 계획 지운다. 
+        list_item = project.schedule.split("*&*")
+        list_item.pop()
+        list_item.pop(int(item_num))
+        list_str = "*&*".join(list_item) + "*&*"
+
+        project.schedule = list_str
+        db.session.commit()
+
+
+        return redirect(url_for('project_detail', proj_id=project_id))
+
+    logs = Log.query.all()
+    return render_template('make_log/make_log.html', logs = logs)
+
+
+
+
 @app.route('/log_detail/<log_id>', methods=['GET', 'POST'])
 def log_detail(log_id):
     log = Log.query.get(log_id)
