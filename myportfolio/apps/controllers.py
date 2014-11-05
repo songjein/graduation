@@ -98,9 +98,13 @@ def my_project():
     # 유저 정보로.. 
     user = User.query.get(g.user_id)
 
+    # 유저가 만든 프로젝트 정보
     projects = user.projects
 
-    return render_template('main/main.html', is_mine=True , projects=projects)
+    # 유저가 초대된 프로젝트 정보도..
+    members = user.members
+
+    return render_template('main/main.html', is_mine=True , projects=projects, members=members)
 
 @app.route('/delete_project', methods=['GET', 'POST'] )
 def delete_project():

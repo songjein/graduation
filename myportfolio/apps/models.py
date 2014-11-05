@@ -37,7 +37,8 @@ class Member(db.Model):
     user_id = db.Column(db.String(255))
     user = db.relationship('User',
         foreign_keys=[user_id],
-        primaryjoin="Member.user_id==User.id") #User쪽에서 일로 넘어올 필요는 x 
+        primaryjoin="Member.user_id==User.id",
+        backref=db.backref('members', cascade='all, delete-orphan', lazy='dynamic')) #User쪽에서 일로 넘어올 필요는 x 
 
     project_id = db.Column(db.Integer)
     project = db.relationship('Project',
