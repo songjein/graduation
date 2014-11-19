@@ -109,9 +109,29 @@ class Comment(db.Model):
 
 
 class User(db.Model):
+    # id = db.Column(db.String(255), primary_key=True)
+
     id = db.Column(db.String(255), primary_key=True)
-    password = db.Column(db.String(255))
-    name = db.Column(db.String(255))
-    join_date = db.Column(db.DateTime(), default=db.func.now())
+    name = db.Column(db.String(64))
+    gender = db.Column(db.String(10))
+    picture = db.Column(db.String(255))
+    # email = db.Column(db.String(120), unique=True)
+    date_joined = db.Column(db.DateTime, default=db.func.now())
+    date_last_logged_in = db.Column(db.DateTime)
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def __repr__(self):
+        return '<User %r>' % (self.fullname)
 
 

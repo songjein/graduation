@@ -58,7 +58,7 @@
   <div class="container" style="padding-top:10px">
     <div class="row" >
       <div class="form-group has-warning col-md-2">
-        <input type="text" class="form-control" id="chat_name" disabled value="{{g.user_id}}" >
+        <input type="text" class="form-control" id="chat_name" disabled value="{{g.user.id}}" >
       </div>
       <div class="form-group has-success col-md-8">
         <input type="text" class="form-control" id="chat_msg" placeholder="message">
@@ -122,6 +122,9 @@ $(function(){
                                 $('.modal-footer .save-btn').click(function(){
                                     
                                   $current_item.text($('.modal-body textarea').val())
+                                   $.get('/update_list', {
+                                      list_string : getListString()
+                                    }, function(data){})   
                                 })
                               })
                             .hide().fadeIn(550, 'swing');
@@ -196,6 +199,9 @@ $(function() {
                         $('.modal-footer .save-btn').click(function(){
                             
                           $current_item.text($('.modal-body textarea').val())
+                           $.get('/update_list', {
+                            list_string : getListString()
+                          }, function(data){})   
                         })
                       })
                       .hide().fadeIn(550, 'swing');
@@ -231,6 +237,9 @@ $(function() {
                           $('.modal-footer .save-btn').click(function(){
                               
                             $current_item.text($('.modal-body textarea').val())
+                             $.get('/update_list', {
+                                list_string : getListString()
+                              }, function(data){})   
                           })
                         })
                       .hide().fadeIn(550, 'swing');

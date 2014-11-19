@@ -1,3 +1,12 @@
+<style>
+            .llUserPictureInNav > img {
+    width: 20px;
+    height: 20px;
+    border-radius: 17px;
+    -webkit-border-radius: 17px;
+    -moz-border-radius: 17px;
+}
+</style>
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -5,9 +14,13 @@
             
         </div>
         
-        {% if g.user_id%}
+        {% if g.user.is_authenticated() %}
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#">{{g.user_id}}님 환영합니다.</a></li>
+
+            <li><a href="#" class="llUserPictureInNav">
+                            <img src="{{ g.user.picture }}"> {{ g.user.fullname }}님
+                        </a></li>
+          <li><a href="#">{{g.user.name}}님 환영합니다.</a></li>
           <li><a href="{{url_for('logout')}}">로그아웃</a></li>
         </ul>
         {% endif %}

@@ -3,21 +3,19 @@ from flask import session, flash, redirect, url_for
 from flask.ext.login import login_user
 from apps import db
 from apps.models import User
-from core import variables
 
 
 def OAuth2RegisterToUser(user_data, type):
     
-    user = User.query.filter_by(email=user_data.get('email')).first()
+    user = User.query.filter_by(id=user_data.get('id')).first()
 
 
     if user is None:
         
         if type == 'FACEBOOK':
             user = User(
-                fullname=user_data['name'],
-                email=user_data['email'],
-                role=variables.USER_ROLES['USER'],
+                id=user_data['id'],
+                name=user_data['name'],
                 picture="http://graph.facebook.com/%s/picture" % user_data['id'],
                 gender=user_data['gender']
             )
@@ -27,7 +25,7 @@ def OAuth2RegisterToUser(user_data, type):
         #
         # @users
         #
-        users = User.query.filter_by(email=user.email)
+        users = User.query.filter_by(id=user.id)
 
         if users.count() > 1:
             return 409
@@ -43,7 +41,7 @@ def OAuth2RegisterToUser(user_data, type):
 
 
 def OAuthSessionPop():
-    OAUTH_PROVIDER = ['google_token', 'oauth_token', 'twitter_oauth']
+    OAUTH_PROVIDER = ['oauth_token']
     for provider in OAUTH_PROVIDER:
         session.pop(provider, None)
 
@@ -51,7 +49,7 @@ def OAuthSessionPop():
 def OAuthRegisterAndLoginRedirect(register_result):
     if register_result == 200:
         flash(u"로그인에 성공하였습니다.", "success")
-        return redirect(url_for('article_list'))
+        return redirect(url_for('main'))
     elif register_result == 409:
         flash(u"중복된 사용자 이메일입니다.", "warning")
         return redirect(url_for('login'))

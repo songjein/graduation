@@ -20,3 +20,6 @@ class Production(Config):
     ADMIN = "jeinsong200@gmail.com"
     SQLALCHEMY_DATABASE_URI = 'mysql+gaerdbms:///portfolio?instance=do-portfolio:jein-song2'
     migration_directory = 'migrations'
+
+    FACEBOOK_APP_ID = "334363720083600"
+    FACEBOOK_APP_SECRET = "2579c4ee11871e6618a51a4ff2a44a50"

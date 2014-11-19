@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
-from facebook import get_user_from_cookie, GraphAPI
+
+from flask.ext.oauthlib.client import OAuthException
+
+from flask.ext.login import login_user, logout_user, current_user, login_required
+
 from flask import render_template, request, redirect, url_for, flash, session, g
+
 from sqlalchemy import desc
-from apps import app, db
+
+from apps import app, db, login_manager, facebook
+
+from core import variables, OAuthManagement
 
 import pusher
 
@@ -13,68 +21,127 @@ class Photo(google.db.Model):
 
 from apps.models import (User, Comment, Log, Group, Project, Member)
 
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash(u"로그인이 필요합니다.", "warning")
+    return redirect(url_for('login'))
+
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+
 @app.before_request
 def before_request():
-    g.user_id = None
-    if 'user_id' in session:
-        g.user_id = session['user_id']
+    g.user = current_user
+
 
 
 
 @app.route('/', methods=['GET', 'POST'])
-def article_list():
-
+def index():
     return redirect(url_for('login'))
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        user_id = request.form['user_id']
-        
-        # login success
-        session.permanent = True
-        session['user_id'] = user_id
+    return render_template('login/login.html')
 
-        return redirect(url_for('main'))
+#
+# @OAuth login management
+#
 
-    users = User.query.all()
+@app.route('/login/facebook/')
+def login_facebook():
+    callback = url_for(
+        'facebook_authorized',
+        _external=True
+    )
+    return facebook.authorize(callback=callback)
 
-    return render_template('login/login.html', users=users)
+
+@app.route('/login/facebook/authorized')
+@facebook.authorized_handler
+def facebook_authorized(resp):
+    if resp is None:
+        flash(u"로그인 인증에 실패하였습니다.", "error")
+        return redirect(url_for('login'))
+
+    session['oauth_token'] = (resp['access_token'], '')
+
+    userinfo = facebook.get('/me')
+
+    # return userinfo.data['id']
+    # return str(userinfo.data)
+
+    register_result = OAuthManagement.OAuth2RegisterToUser(userinfo.data, 'FACEBOOK')
+
+    return OAuthManagement.OAuthRegisterAndLoginRedirect(register_result)
+
+
+@facebook.tokengetter
+def get_facebook_oauth_token():
+    return session.get('oauth_token')
 
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.clear()
+    logout_user()
+    OAuthManagement.OAuthSessionPop()
     return redirect(url_for('login'))
 
 
-@app.route('/join', methods=['GET', 'POST'])
-def join():
-    # 인증 아직 없음..
-    if request.method == 'POST':
-        user_id = request.form['user_id']
-        pw = request.form['pw']
-        name = request.form['name']
 
-        user = User(
-                id = user_id,
-                password = pw,
-                name = name,
-            )
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         user_id = request.form['user_id']
+        
+#         # login success
+#         session.permanent = True
+#         session['user_id'] = user_id
 
-        db.session.add(user)
-        db.session.commit()
+#         return redirect(url_for('main'))
 
-        flash('join success!','success')
+#     users = User.query.all()
 
-        return redirect(url_for('login'))
+#     return render_template('login/login.html', users=users)
 
-    # 유저 확인 위해 임시로 넣어놓은 코드
-    users = User.query.all()
 
-    return render_template('join/join.html', users = users)
+# @app.route('/logout')
+# def logout():
+#     session.clear()
+#     return redirect(url_for('login'))
+
+
+# @app.route('/join', methods=['GET', 'POST'])
+# def join():
+#     # 인증 아직 없음..
+#     if request.method == 'POST':
+#         user_id = request.form['user_id']
+#         pw = request.form['pw']
+#         name = request.form['name']
+
+#         user = User(
+#                 id = user_id,
+#                 password = pw,
+#                 name = name,
+#             )
+
+#         db.session.add(user)
+#         db.session.commit()
+
+#         flash('join success!','success')
+
+#         return redirect(url_for('login'))
+
+#     # 유저 확인 위해 임시로 넣어놓은 코드
+#     users = User.query.all()
+
+#     return render_template('join/join.html', users = users)
 
 
 @app.route('/main')
@@ -96,7 +163,7 @@ def main():
 @app.route('/my_project')
 def my_project():
     # 유저 정보로.. 
-    user = User.query.get(g.user_id)
+    user = User.query.get(g.user.id)
 
     # 유저가 만든 프로젝트 정보
     projects = user.projects
@@ -118,7 +185,7 @@ def delete_project():
         flash('delete success', 'success')
 
     # 유저 정보로.. 
-    user = User.query.get(g.user_id)
+    user = User.query.get(g.user.id)
     projects = user.projects
 
     return render_template('delete_project/delete_project.html' , projects=projects)
@@ -221,7 +288,7 @@ def test():
 @app.route('/time_line', methods=['GET'])
 def time_line():
     
-    logs = Log.query.order_by(desc(Log.date_created)).filter_by(user_id=g.user_id)
+    logs = Log.query.order_by(desc(Log.date_created)).filter_by(user_id=g.user.id)
 
     return render_template('time_line/time_line.html', logs=logs)
 
@@ -259,13 +326,13 @@ def create_project():
 
 
         # 현재 로그인 한 사람의 아이디를 저장한다. 프로젝트 생성자로
-        user = User.query.get(g.user_id)
+        user = User.query.get(g.user.id)
 
         proj = Project(
                 title = project_name,
                 description = project_desc,
                 file_key = file_key,
-                user_id = g.user_id,
+                user_id = g.user.id,
                 user = user,
             )
 
@@ -320,7 +387,7 @@ def make_log(project_id):
             
 
         project = Project.query.get(project_id)
-        user = User.query.get(g.user_id)
+        user = User.query.get(g.user.id)
 
         # 확신해도 되는건 project, user 제대로 들어감.
 
@@ -328,7 +395,7 @@ def make_log(project_id):
                 project = project,
                 project_id = project_id,
                 user = user,
-                user_id = g.user_id,
+                user_id = g.user.id,
                 title = title,
                 content = content,
                 file_key = file_key
@@ -364,7 +431,7 @@ def make_log_delete_sche(project_id, item_num):
             
 
         project = Project.query.get(project_id)
-        user = User.query.get(g.user_id)
+        user = User.query.get(g.user.id)
 
         # 확신해도 되는건 project, user 제대로 들어감.
 
@@ -372,7 +439,7 @@ def make_log_delete_sche(project_id, item_num):
                 project = project,
                 project_id = project_id,
                 user = user,
-                user_id = g.user_id,
+                user_id = g.user.id,
                 title = title,
                 content = content,
                 file_key = file_key
@@ -408,7 +475,7 @@ def log_detail(log_id):
 
     if request.method == 'POST':
         log_id = request.form['log_id']
-        user_id = request.form['user_id']
+        user_id = g.user.id
         is_like = False
         if request.form['islike'] == 'like_with_feed':
             is_like = True
@@ -445,7 +512,7 @@ def make_comment():
 
     if request.method == 'POST':
         log_id = request.form['log_id']
-        user_id = request.form['user_id']
+        user_id = g.user.id
         is_like = False
         if request.form['islike'] == 'like_with_feed':
             is_like = True

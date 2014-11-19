@@ -122,11 +122,11 @@ $(document).ready(function() {
     {% for proj in projects %}
 
     <div class="grid"
-    {% if proj.user_id == g.user_id%}
-      style="background-color:#FFFFB4"
+    {% if proj.user_id == current_user.id %}
+      style="background-color:#E8FFFF"
     {% else %}
       {% for member in proj.members%}
-        {% if g.user_id == member.user_id%}
+        {% if current_user.id == member.user_id%}
           style="background-color:#E4F7BA"
         {% endif %}
       {% endfor%}
@@ -137,7 +137,7 @@ $(document).ready(function() {
       </div>
       <strong>{{proj.title}}</strong>
       <p>{{proj.description}}</p>
-      <div class="meta">{{proj.user_id}}</div>
+      <div class="meta">{{proj.user.name}}</div>
     </div>
     {% endfor%}
 
@@ -150,7 +150,7 @@ $(document).ready(function() {
           </div>
           <strong>{{member.project.title}}</strong>
           <p>{{member.project.description}}</p>
-          <div class="meta">{{member.project.user_id}}</div>
+          <div class="meta">{{member.project.user.id}}</div>
         </div>
       {% endfor %}
     {% endif %}
