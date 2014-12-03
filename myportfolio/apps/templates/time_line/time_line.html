@@ -31,7 +31,7 @@
 				      {{log.user.id}}&nbsp;&nbsp; -->
 				    
 					<p>{{log.content}}</p>
-					<a href="#0" class="cd-read-more">Read more</a>
+          			 <a href="{{url_for('log_detail', log_id=log.id)}}" class="btn btn-warning btn-lg col-md-12" role="button">Read more</a>
 					<span class="cd-date">{{log.date_created}}</span>
 				</div> <!-- cd-timeline-content -->
 			</div> <!-- cd-timeline-block -->

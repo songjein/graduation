@@ -10,6 +10,9 @@ from flask.ext.script import Manager
 from flask.ext.login import LoginManager
 from flask.ext.oauthlib.client import OAuth
 
+
+
+
 app = Flask('apps')
 app.config.from_object('apps.settings.Production')
 

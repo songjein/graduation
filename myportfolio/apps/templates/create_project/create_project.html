@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block contents %}
+<div style=" padding-top: 70px;"></div>
 <script>
 
 
@@ -269,7 +270,8 @@ function setCategories(num){
   </select>
   <select name="category1" multiple class="form-control showCategory1"></select>
   </div>
-
+  
+<!-- 
    <div class="form-group has-warning">
    <label>그룹2(카테고리2)</label>
    <select name="group2" class="form-control selectCategory2">
@@ -301,10 +303,10 @@ function setCategories(num){
      <option value="Recreation">Recreation</option>
    </select>
    <select name="category3" multiple class="form-control showCategory3"></select>
-   </div>
+   </div> -->
  
    <div class="form-group has-warning">
-     <p>사진 (1메가 이하) : <input type="file" name="photo"></p>
+     <p>사진 (1메가 이하) : <input type="file" name="photo" Accept="image/*"></p>
    </div>
  
    <button type="submit" class="btn btn-default">제출</button>

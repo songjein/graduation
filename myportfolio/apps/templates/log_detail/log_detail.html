@@ -1,39 +1,64 @@
 {% extends "layout.html" %}
 
 {% block contents %}
+<div style=" padding-top: 70px;"></div>
 
+<style>
+            .llUserPictureInNav > img {
+    width: 20px;
+    height: 20px;
+    border-radius: 17px;
+    -webkit-border-radius: 17px;
+    -moz-border-radius: 17px;
+}
+</style>
 
 <div class="container">
-  <h1>{{log.title}}<h4>{{log.date_created}}</h4></h1>
+  <h1>{{log.title}} <a style="margin-left:3px; margin-bottom:2px;" href="{{url_for('delete_log', log_id=log.id)}}" class="btn btn-default " role="button">삭제</a><h4>{{log.date_created}}</h4></h1>
   <hr>
-  <img src="/show/{{log.file_key}}"/>
+  
+  {% if log.file_key%}
+  <a href="/show/{{log.file_key}}" data-lightbox="image-1"><img src="/show/{{log.file_key}}" width='300' /></a>
   <hr>
-  <p style="font-size:1.5em">{{log.content}}</p>
+  {% endif %}
+  <p style="font-size:1.5em ; font-weight:bold">{{log.content|safe}}</p>
   <hr>
 
   <center>
     <form role="form" method='POST'>
       <input type="hidden" name="log_id" value="{{log.id}}">
       
+      <!-- 이프걸어서 멤버면 일케 아니면 저렇게 -> 관심댓글 많이 남긴-->
       <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-1">
+          {% if g.user.id in members or g.user.id == log.project.user_id %}
           <div class="radio-inline">
             <label>
-              <input style="font-size:1.5em" type="radio" name="islike" value="like_with_feed">추천의견 남기기</input>
+              <input style="font-size:1.5em" type="hidden" name="islike" value="just_feed"></input>
+              <span class="glyphicon glyphicon-exclamation-sign" style="color: #F0AD4E; font-size: 2em;">
             </label>
           </div>
+          {% else %}
           <div class="radio-inline">
             <label>
-              <input style="font-size:1.5em" type="radio" name="islike" value="just_feed">의견만 남기기</input>
+              <input style="font-size:1.5em" type="hidden" name="islike" value="like_with_feed"></input>
+              <span class="glyphicon glyphicon-heart" style="color: #5BC0DE; font-size: 2em;">
             </label>
           </div>
+          {% endif %}
         </div>
-        <div class="form-group has-warning col-md-8">
+        <div class="form-group has-warning col-md-9">
           <input type="text" class="form-control" placeholder="내용" name="content">
         </div>
-        <div class="col-md-1">
-          <button type="submit" class="btn btn-warning">글 남기기</button>
-        </div>
+        {% if g.user.id in members or g.user.id == log.project.user_id %}
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-warning">의견 남기기</button>
+          </div>
+        {% else %}
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-info">관심 댓글 남기기</button>
+          </div>
+        {% endif %}
       </div>
     </form>
   </center>
@@ -41,9 +66,9 @@
   
   {% for comment in log.comments%}
     {% if comment.is_like %}
-    <h4 style="color:#E4F7BA">{{comment.user_id}} : {{comment.content}}</h4>
+    <h4 class="llUserPictureInNav" style="color:#5BC0DE ; font-weight:bold"><img src="{{ comment.user.picture }}"> {{comment.user.name}} : {{comment.content}}</h4>
     {% else %}
-    <h4 style="color:#BDBDBD">{{comment.user_id}} : {{comment.content}}</h4>
+    <h4 class="llUserPictureInNav" style="color:#F0AD4E ; font-weight:bold"><img src="{{ comment.user.picture }}"> {{comment.user.name}} : {{comment.content}}</h4>
     {% endif %}
   {% endfor %}
       

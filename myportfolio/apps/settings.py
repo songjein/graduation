@@ -18,7 +18,10 @@ class Production(Config):
     debug = True
     CSRF_ENABLED = False
     ADMIN = "jeinsong200@gmail.com"
+    
+
     SQLALCHEMY_DATABASE_URI = 'mysql+gaerdbms:///portfolio?instance=do-portfolio:jein-song2'
+    
     migration_directory = 'migrations'
 
     FACEBOOK_APP_ID = "334363720083600"

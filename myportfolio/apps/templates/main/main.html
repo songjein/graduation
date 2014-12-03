@@ -96,7 +96,7 @@ $(document).ready(function() {
         <center><a href="{{url_for('delete_project')}}"><span class="glyphicon glyphicon-trash" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
       </div>
       <center><strong>Modify project</strong></center>
-      <center><p>프로젝트의 수정 및 삭제</p></center>
+      <center><p>프로젝트의 삭제</p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
     {% else %}
@@ -116,6 +116,14 @@ $(document).ready(function() {
       <center><p>나의 활동을 타임라인 형태로 보여줍니다.</p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
+     <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('favorite')}}"><span class="glyphicon glyphicon-tags" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
+        </div>
+        <center><strong>Favorite</strong></center>
+        <center><p>즐겨찾기</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
     {% endif %}
 
 
@@ -132,25 +140,30 @@ $(document).ready(function() {
       {% endfor%}
     {% endif %}
     >
+      {% if proj.file_key %}
       <div class="imgholder">
         <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><img src="/show/{{proj.file_key}}"></a>
       </div>
-      <strong>{{proj.title}}</strong>
-      <p>{{proj.description}}</p>
+      {% endif %}
+      <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><strong>{{proj.title|truncate(9)}}</strong></a>
+      <p>{{proj.description|truncate(25)}}</p>
       <div class="meta">{{proj.user.name}}</div>
     </div>
     {% endfor%}
 
-
+    
+    <!--이거 왜있는거지- myproject 보여줄 때 넣어줌.-->
     {% if members %}
       {% for member in members %}
         <div class="grid" style="background-color:#E4F7BA">
+          {% if member.project.file_key %}
           <div class="imgholder">
             <a href="{{ url_for('project_detail', proj_id=member.project.id) }}"><img src="/show/{{member.project.file_key}}"></a>
           </div>
-          <strong>{{member.project.title}}</strong>
-          <p>{{member.project.description}}</p>
-          <div class="meta">{{member.project.user.id}}</div>
+          {% endif %}
+          <a href="{{ url_for('project_detail', proj_id=member.project.id) }}"><strong>{{member.project.title|truncate(9)}}</strong></a>
+          <p>{{member.project.description|truncate(25)}}</p>
+          <div class="meta">{{member.project.user.name}}</div>
         </div>
       {% endfor %}
     {% endif %}

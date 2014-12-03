@@ -108,6 +108,24 @@ class Comment(db.Model):
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
 
+
+# 구성원 판단시 Project.user_id (생성자) + Participants.user_id(구성원)
+class Favorite(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.String(255))
+    user = db.relationship('User',
+        foreign_keys=[user_id],
+        primaryjoin="Favorite.user_id==User.id",
+        backref=db.backref('favorites', cascade='all, delete-orphan', lazy='dynamic')) 
+
+    project_id = db.Column(db.Integer)
+    project = db.relationship('Project',
+        foreign_keys=[project_id],
+        primaryjoin="Favorite.project_id==Project.id",
+        backref=db.backref('favorites', cascade='all, delete-orphan', lazy='dynamic')) #Project쪽에서 일로 넘어올 필요는 x ?
+
+
 class User(db.Model):
     # id = db.Column(db.String(255), primary_key=True)
 

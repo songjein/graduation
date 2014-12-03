@@ -23,6 +23,10 @@
   .grid{
     color:black;
   }
+  .intro_grid{
+    background-color:  rgba(20,20,20,0.9);
+    color: rgba(255,255,255, 0.9);
+  }
   .menu_grid{
     background-color:  rgba(0,0,0,0.9);
     color: rgba(255,255,255, 0.9);
@@ -86,118 +90,123 @@ $(document).ready(function() {
   
   <div id="container">
 
-    <div class="grid">
+    <div class="grid intro_grid">
       <div class="imgholder">
         <img src="/show/{{project.file_key}}">
       </div>
       <center><strong>{{project.title}}</strong></center>
       <center><p>{{project.description}}</p></center>
-      <center><p style="color:gray">구성원: <span style="font-weight:bold; color:blue">{{project.user_id}}</span>
-        {% for member in project.members%}{{member.user_id}},{% endfor %}
+      <center><p style="color:gray">구성원: <span style="font-weight:bold; color:yellow">{{project.user.name}}</span>
+        {% for member in project.members%},{{member.user.name}}{% endfor %}
       </p></center>
+      <center style="font-size:2em"><span class="glyphicon glyphicon-thumbs-up" style="color: #35BFFF;"></span>&nbsp;{{project.like_count}}</center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
+    
 
-    <div class="grid menu_grid">
-      <div class="imgholder">
-        <center><a href="{{url_for('meeting', proj_id = project.id)}}"><span class="glyphicon glyphicon-list-alt" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
-      </div>
-      <center><strong>To do list</strong></center>
-      <center><p>회의를 통해 목표를 정합니다.</p></center>
-      <!-- <div class="meta">by j osborn</div> -->
-    </div>
 
-    <div class="grid menu_grid">
-      <div class="imgholder">
-        <center><a href="{{url_for('make_log', project_id=project.id)}}"><span class="glyphicon glyphicon-pencil" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
-      </div>
-      <center><strong>Write log</strong></center>
-      <center><p>프로젝트의 로그를 기록합니다.&nbsp;&nbsp;&nbsp;</p></center>
-      <!-- <div class="meta">by j osborn</div> -->
-    </div>
-
-    <div class="grid menu_grid">
-      <div class="imgholder">
-        <center><a href="{{url_for('statistics', proj_id=project.id)}}"><span class="glyphicon glyphicon-stats" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
-      </div>
-      <center><strong>Statistic</strong></center>
-      <center><p>참여도 및 활동을 분석합니다.</p></center>
-      <!-- <div class="meta">by j osborn</div> -->
-    </div>
-
-    <div class="grid menu_grid">
-      <div class="imgholder">
-        <center><a href="{{url_for('add_member_to', proj_id=project.id)}}"><span class="glyphicon glyphicon-plus" style="color: rgba(255,255,255, 0.9); font-size: 4em;"></span><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
-      </div>
-      <center><strong>Add coworkers</strong></center>
-      <center><p>프로젝트 팀원을 추가합니다.&nbsp;&nbsp;&nbsp;</p></center>
-      <!-- <div class="meta">by j osborn</div> -->
-    </div>
-  
-    <!-- 계획 아이템들  -->
-    {% if list_item %}
-      {% for item in list_item %}
-      <div class="grid sche_grid">
+    {% if g.user.id in members or g.user.id == project.user_id %}
+      <div class="grid menu_grid">
         <div class="imgholder">
-          <center><a href="{{url_for('make_log_delete_sche', project_id=project.id, item_num=loop.index0)}}"><span class="glyphicon glyphicon-check" style="color: rgba(0,0,0, 0.9); font-size: 5em;"></span></a></center>
+          <center><a href="{{url_for('meeting', proj_id = project.id)}}"><span class="glyphicon glyphicon-list-alt" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
         </div>
-        <center><strong>{{loop.index}}</strong></center>
-        <center><p>{{item}}</p></center>
+        <center><strong>To do list</strong></center>
+        <center><p>회의를 통해 목표를 정합니다.</p></center>
         <!-- <div class="meta">by j osborn</div> -->
       </div>
-      {% endfor %}
+
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('make_log', project_id=project.id)}}"><span class="glyphicon glyphicon-pencil" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
+        </div>
+        <center><strong>Write log</strong></center>
+        <center><p>프로젝트의 로그를 기록합니다.&nbsp;&nbsp;&nbsp;</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('statistics', proj_id=project.id)}}"><span class="glyphicon glyphicon-stats" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
+        </div>
+        <center><strong>Statistic</strong></center>
+        <center><p>참여도 및 활동을 분석합니다.</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('add_member_to', proj_id=project.id)}}"><span class="glyphicon glyphicon-plus" style="color: rgba(255,255,255, 0.9); font-size: 4em;"></span><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
+        </div>
+        <center><strong>Add coworkers</strong></center>
+        <center><p>프로젝트 팀원을 추가합니다.&nbsp;&nbsp;&nbsp;</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+      <!-- 계획 아이템들  -->
+      {% if list_item %}
+        {% for item in list_item %}
+        <div class="grid sche_grid">
+          <div class="imgholder">
+            <center><a href="{{url_for('make_log_delete_sche', project_id=project.id, item_num=loop.index0, title=item)}}"><span class="glyphicon glyphicon-check" style="color: rgba(0,0,0, 0.9); font-size: 5em;"></span></a></center>
+          </div>
+          <center><p><b>{{loop.index}}.</b>&nbsp;{{item|truncate(15)}}</p></center>
+          <!-- <div class="meta">by j osborn</div> -->
+        </div>
+        {% endfor %}
+      {% endif %}
+    {% else %}
+    
+      <!-- 좋아요 기능 -->
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('add_like', project_id=project.id) }}"><span class="glyphicon glyphicon-thumbs-up" style="font-size: 5em;"></span></a><center>
+        </div>
+        <center><a href="{{url_for('add_like', project_id=project.id) }}"><strong>Like</strong></a></center>
+        <center><p>이 프로젝트를 추천합니다.</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+      <!--즐겨찾기 추가 기능 -->
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('add_favorite', project_id=project.id) }}"><span class="glyphicon glyphicon-tag" style="font-size: 5em;"></span></a><center>
+        </div>
+        <center><a href="{{url_for('add_like', project_id=project.id) }}"><strong>Favorite</strong></a></center>
+        <center><p>즐겨찾기에 추가합니다.</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+       <!-- 계획 아이템들  -->
+      {% if list_item %}
+        {% for item in list_item %}
+        <div class="grid sche_grid">
+          <div class="imgholder">
+            <center><a href="#"><span class="glyphicon glyphicon-check" style="color: rgba(0,0,0, 0.9); font-size: 5em;"></span></a></center>
+          </div>
+          <center><p><b>{{loop.index}}.</b>&nbsp;{{item|truncate(15)}}</p></center>
+          <!-- <div class="meta">by j osborn</div> -->
+        </div>
+        {% endfor %}
+      {% endif %}
     {% endif %}
+    
+
+
+    {% for log in logs%}
+      <div class="grid">
+<!--         {% if log.file_key %}
+        <div class="imgholder">
+          <a href="{{ url_for('log_detail', log_id=log.id) }}"><img src="/show/{{log.file_key}}"></a>
+        </div>
+        {% endif %} -->
+        <strong><a href="{{ url_for('log_detail', log_id=log.id) }}">{{log.title|truncate(10)|safe}}</a></strong>
+        <p>{{log.content|truncate(20)|safe}}</p>
+        <div class="meta"><a href="{{ url_for('log_detail', log_id=log.id) }}">{{log.user.name}}</a></div>
+      </div>
+    {% endfor %}
+
   </div>
 </div>
 
 
-
-<hr>
-
-
-
-<link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans:400,700' rel='stylesheet' type='text/css'>
-
-  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}"> CSS reset -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/stylefortimeline.css') }}"> <!-- Resource style -->
-  <script src="{{ url_for('static', filename='js/modernizr.js') }}"></script> <!-- Modernizr -->
-
-
-  <section id="cd-timeline" class="cd-container">
-
-  {% for log in logs%}
-
-      <div class="cd-timeline-block">
-        <div class="cd-timeline-img cd-picture">
-          <!-- <img src="{{ url_for('static', filename='images/cd-icon-picture.svg') }}" alt="Picture"> -->
-        </div> <!-- cd-timeline-img -->
-
-        <div class="cd-timeline-content">
-          <h2>{{log.title}}</h2>
-
-          {% if log.file_key%}
-              <img src="/show/{{log.file_key}}" alt="사진 없음">
-            {% else %}
-              (사진 없음)
-            {% endif%}
-              <!-- {{log.project.id}}&nbsp;,&nbsp;
-              {{log.user.id}}&nbsp;&nbsp; -->
-            
-          <p>{{log.content}}</p>
-          <a href="{{url_for('log_detail', log_id=log.id)}}" class="cd-read-more">Read more</a>
-          <span class="cd-date">{{log.date_created}}</span>
-        </div> <!-- cd-timeline-content -->
-      </div> <!-- cd-timeline-block -->
-  {% else %}
-  로그를 남겨주세요.
-  {% endfor %}
-
-  </section> <!-- cd-timeline -->
-
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script> <!-- Resource jQuery -->
-
 {% endblock %}
-
 
 
 

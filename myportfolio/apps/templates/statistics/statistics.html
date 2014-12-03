@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 
 {% block contents %}
+<div style=" padding-top: 70px;"></div>
+
                              <script type="text/javascript" src="https://www.google.com/jsapi"></script>
                              <script type="text/javascript">
                                google.load("visualization", "1", {packages:["corechart"]});
@@ -9,8 +11,8 @@
 
                                  var data = google.visualization.arrayToDataTable([
                                    ['Task', '프로젝트 기여도'],
-                                   ['{{project.user_id}}',5],
-                                   {% for member in project.members%}['{{member.user_id}}', 5],{% endfor %}
+                                   // ['{{project.user_id}}',5],
+                                   {% for key, value in contributers.iteritems()%}['{{key}}', {{value}}],{% endfor %}
                                    // ['Work',     11],
                                    // ['송제인',      2],
                                    // ['Commute',  2],

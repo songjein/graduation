@@ -19,7 +19,7 @@ import google.appengine.ext as google
 class Photo(google.db.Model):
     photo = google.db.BlobProperty()
 
-from apps.models import (User, Comment, Log, Group, Project, Member)
+from apps.models import (User, Comment, Log, Group, Project, Member, Favorite)
 
 
 @login_manager.unauthorized_handler
@@ -208,14 +208,36 @@ def project_detail(proj_id):
     list_item = list_string.split('*&*')
     list_item.pop()
 
-    return render_template('project_detail/project_detail.html', project=project , logs=logs, list_item=list_item)
+    members = []
+    for member in project.members:
+        members.append(member.user_id)
+
+    return render_template('project_detail/project_detail.html', project=project , logs=logs, list_item=list_item, members=members)
 
 @app.route('/statistics/<proj_id>')
 def statistics(proj_id):
 
+    contributers = []
+
     project = Project.query.get(proj_id)
 
-    return render_template('statistics/statistics.html', project= project)
+    logs = project.logs
+    for log in logs:
+        contributers.append(log.user_id)
+
+        comments = log.comments
+        for comment in comments:
+            contributers.append(comment.user_id)
+
+    result = {}
+    members = project.members
+    for member in members :
+        result[member.user.name] = contributers.count(member.user.id) 
+    # 만든사람
+    result[project.user.name] = contributers.count(project.user.id)
+
+
+    return render_template('statistics/statistics.html', project= project, contributers=result)
 
 @app.route('/add_member_to/<proj_id>', methods=['GET', 'POST'])
 def add_member_to(proj_id):
@@ -412,8 +434,8 @@ def make_log(project_id):
     return render_template('make_log/make_log.html', logs = logs)
 
 
-@app.route('/make_log_delete_sche/<project_id>/<item_num>', methods=['GET', 'POST'])
-def make_log_delete_sche(project_id, item_num):
+@app.route('/make_log_delete_sche/<project_id>/<item_num>/<title>', methods=['GET', 'POST'])
+def make_log_delete_sche(project_id, item_num, title):
 
     if request.method == 'POST':
         title = request.form['title']
@@ -464,7 +486,7 @@ def make_log_delete_sche(project_id, item_num):
         return redirect(url_for('project_detail', proj_id=project_id))
 
     logs = Log.query.all()
-    return render_template('make_log/make_log.html', logs = logs)
+    return render_template('make_log/make_log.html', logs = logs, title=title)
 
 
 
@@ -497,6 +519,14 @@ def log_detail(log_id):
         flash('comment write success','success')
 
     return render_template('log_detail/log_detail.html', log=log)
+
+@app.route('/delete_log/<log_id>')
+def delete_log(log_id):
+    log = Log.query.get(log_id)
+    proj_id = log.project.id
+    db.session.delete(log)
+    db.session.commit()
+    return redirect(url_for('project_detail', proj_id=proj_id))
 
 @app.route('/show/<key>')
 def shows(key):
@@ -538,6 +568,41 @@ def make_comment():
     return render_template('make_comment/make_comment.html', users=users, logs=logs, comments=comments)
 
 
+
+@app.route('/favorite/', methods=['GET', 'POST'])
+def favorite():
+    favorites = g.user.favorites
+
+    return render_template('favorite/favorites.html', favorites=favorites)
+
+@app.route('/add_favorite/<project_id>', methods=['GET', 'POST'])
+def add_favorite(project_id):
+
+    project = Project.query.get(project_id)
+
+    favorite = Favorite(
+            user_id=g.user.id,
+            user = g.user,
+            project_id=project_id,
+            project = project
+        )
+    db.session.add(favorite)
+    db.session.commit()
+
+    flash('add favorite success!')
+
+    return redirect(url_for('project_detail', proj_id=project_id))
+
+
+@app.route('/add_like/<project_id>')
+def add_like(project_id):
+    project = Project.query.get(project_id)
+
+    project.like_count += 1
+
+    db.session.commit()
+
+    return redirect(url_for('project_detail', proj_id=project_id))
 # #
 # # @password check
 # #

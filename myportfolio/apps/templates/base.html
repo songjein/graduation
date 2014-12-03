@@ -8,9 +8,11 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='summernote/dist/summernote.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}"> <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lightbox.css') }}">
     
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/hot-sneaks/jquery-ui.css">
+    
+    <link href="{{ url_for('static', filename='css/summernote.css') }}" rel="stylesheet" media="screen">
     {% endblock %}
 
     {% block scripts %}
@@ -19,16 +21,19 @@
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/base.js') }}"></script>
         <script src="{{ url_for('static', filename='summernote/dist/summernote.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/lightbox.min.js') }}"></script>
         <script src="http://js.pusher.com/2.2/pusher.min.js"></script>
+
+        <script src="{{url_for('static', filename='js/summernote.min.js')}}"></script>
     {% endblock %}
 
     <style>
         body{
-            background: url("{{url_for('static', filename='images/portfolio.jpg')}}");
+            /*background: url("{{url_for('static', filename='images/portfolio.jpg')}}");*/
+            background-color: #EAEAEA;
             background-size: 100%;
             
-            padding-top: 70px;
-            color: white;
+/*            padding-top: 70px;*/
         }
     </style>
 
