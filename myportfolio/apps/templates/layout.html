@@ -6,7 +6,7 @@
     {% endblock %}
 
     <div class="container">
-    	{% with messages = get_flashed_messages(with_categories=true) %}
+    	<!-- {% with messages = get_flashed_messages(with_categories=true) %}
 			{% if messages %}
 				<div id="messages" class="row">
 					{% for category, message in messages %}
@@ -20,7 +20,7 @@
 					{% endfor %}
 				</div>
 			{% endif %}
-    	{% endwith%}
+    	{% endwith%} -->
         {% block contents %}{% endblock %}
     </div>
 {% endblock %}

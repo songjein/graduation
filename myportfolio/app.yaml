@@ -1,5 +1,5 @@
-application: do-portfolio
-version: aahb
+application: my-port4lio
+version: aaak
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -18,6 +18,12 @@ handlers:
 
 - url: .*
   script: apps.app
+
+- url: /(.*\.txt)
+  mime_type: text/plain
+  static_files: static/\1
+  upload: static/(.*\.txt)
+
 
 ### libraries: import third-party libraries in python 2.7 ###
 libraries:

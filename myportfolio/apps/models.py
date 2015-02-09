@@ -12,9 +12,13 @@ class Project(db.Model):
     title = db.Column(db.String(255))
     description = db.Column(db.String(255))
 
+    tags_list = db.Column(db.Text(), default=None)
+
     # group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     
     like_count = db.Column(db.Integer, default=0)
+
+    like_history = db.Column(db.Text(), default=None)
 
     date_created = db.Column(db.DateTime(), default=db.func.now())
 
@@ -29,6 +33,11 @@ class Project(db.Model):
         primaryjoin="Project.user_id==User.id",
         backref=db.backref('projects', cascade='all, delete-orphan', lazy='dynamic'))
 
+class ProjectTag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    proj_id = db.Column(db.Integer)
+    # relationship
+    tags = db.Column(db.Text(), default=None)
 
 # 구성원 판단시 Project.user_id (생성자) + Participants.user_id(구성원)
 class Member(db.Model):
@@ -136,6 +145,9 @@ class User(db.Model):
     # email = db.Column(db.String(120), unique=True)
     date_joined = db.Column(db.DateTime, default=db.func.now())
     date_last_logged_in = db.Column(db.DateTime)
+    
+    flist = db.Column(db.Text())
+    # id,id,id,id,
 
     def is_authenticated(self):
         return True
@@ -150,6 +162,6 @@ class User(db.Model):
         return unicode(self.id)
 
     def __repr__(self):
-        return '<User %r>' % (self.fullname)
+        return '<User %r>' % (self.name)
 
 

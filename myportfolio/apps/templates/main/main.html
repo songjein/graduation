@@ -82,7 +82,7 @@ $(document).ready(function() {
   
   <div id="container">
 
-    {% if is_mine %}
+    {% if mode == "mine" %}
     <div class="grid menu_grid">
       <div class="imgholder">
         <center><a href="{{url_for('create_project')}}"><span class="glyphicon glyphicon-plus-sign" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
@@ -99,7 +99,30 @@ $(document).ready(function() {
       <center><p>프로젝트의 삭제</p></center>
       <!-- <div class="meta">by j osborn</div> -->
     </div>
+    {% elif mode == "others"%}
+    
+     {% if user_id not in g.user.flist%}
+        <div class="grid menu_grid">
+            <div class="imgholder">
+              <center><a href="{{url_for('add_friend', user_id=user_id)}}"><span class="glyphicon glyphicon-plus" style="color: rgba(255,255,255, 0.9); font-size: 4em;"></span><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
+            </div>
+            <center><strong>Add friend</strong></center>
+            <center><p>친구 추가</p></center>
+            <!-- <div class="meta">by j osborn</div> -->
+        </div>
+      {% else %}
+        <div class="grid menu_grid">
+            <div class="imgholder">
+              <center><a href="{{url_for('add_friend', user_id=user_id)}}"><span class="glyphicon glyphicon-remove" style="color: yellow; font-size: 4em;"></span><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
+            </div>
+            <center><strong>delete friend</strong></center>
+            <center><p>친구 삭제</p></center>
+            <!-- <div class="meta">by j osborn</div> -->
+        </div>
+      {% endif %}
+
     {% else %}
+    <!-- main mode -->
     <div class="grid menu_grid">
       <div class="imgholder">
         <center><a href="{{url_for('my_project')}}"><span class="glyphicon glyphicon-eye-open" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
@@ -121,34 +144,53 @@ $(document).ready(function() {
           <center><a href="{{url_for('favorite')}}"><span class="glyphicon glyphicon-tags" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
         </div>
         <center><strong>Favorite</strong></center>
-        <center><p>즐겨찾기</p></center>
+        <center><p>즐겨찾기<br>&nbsp;</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('show_flist')}}"><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
+        </div>
+        <center><strong>Friend list</strong></center>
+        <center><p>친구 리스트 보기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('show_flist')}}"><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
+        </div>
+        <center><strong>tmp menu</strong></center>
+        <center><p>임시 메뉴<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></center>
         <!-- <div class="meta">by j osborn</div> -->
       </div>
     {% endif %}
 
-
-    {% for proj in projects %}
-
-    <div class="grid"
-    {% if proj.user_id == current_user.id %}
-      style="background-color:#E8FFFF"
-    {% else %}
-      {% for member in proj.members%}
-        {% if current_user.id == member.user_id%}
-          style="background-color:#E4F7BA"
-        {% endif %}
+    {% if related_person%}
+      {% for person in related_person %}
+      <div class="grid">
+        <center>
+          <div class="imgholder">
+            <a href="{{url_for('ones_project', user_id=person[0].id)}}"><img src="{{person[0].picture}}"></a>
+          </div>
+          <center><strong><a href="#">{{person[0].name}}</a></strong></center>
+          <center><p>{{person[1]}}번 글을 남김.</p></center>
+        </center>
+      </div>
       {% endfor%}
     {% endif %}
-    >
-      {% if proj.file_key %}
-      <div class="imgholder">
-        <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><img src="/show/{{proj.file_key}}"></a>
+
+
+    {% for proj in projects %}
+      <div class="grid">
+        {% if proj.file_key %}
+        <div class="imgholder">
+          <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><img src="/show/{{proj.file_key}}"></a>
+        </div>
+        {% endif %}
+        <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><strong>{{proj.title|truncate(12)}}</strong></a>
+        <p>{{proj.description|truncate(25)}}</p>
+        <div class="meta">{{proj.user.name}}</div>
       </div>
-      {% endif %}
-      <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><strong>{{proj.title|truncate(9)}}</strong></a>
-      <p>{{proj.description|truncate(25)}}</p>
-      <div class="meta">{{proj.user.name}}</div>
-    </div>
     {% endfor%}
 
     

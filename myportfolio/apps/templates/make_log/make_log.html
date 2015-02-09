@@ -24,7 +24,15 @@
   });
   </script>
 
-<h1>로그를 남기세요</h1>
+
+<script >
+  $(function(){
+    $('#nav_list').prepend('<li><a style="margin-right:3px;" href="{{url_for("project_detail", proj_id=project.id)}}"><span class="glyphicon glyphicon-backward" style="font-size:1.2em; margin-left:10px; color:#EDA900"></span><span style="margin-bottom:1px; ">(뒤로가기)</span></a></li>')
+  })
+</script>
+
+
+<span style="font-size:3em">로그를 남기세요</span>
 <form role="form" enctype="multipart/form-data" method='POST'>
   <div class="form-group has-warning">
     <input type="text" class="form-control" placeholder="로그 제목" name="title" value="{{title}}">

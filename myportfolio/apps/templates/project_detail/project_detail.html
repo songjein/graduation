@@ -156,20 +156,31 @@ $(document).ready(function() {
     {% else %}
     
       <!-- 좋아요 기능 -->
+      {% if g.user.id not in project.like_history %}
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="{{url_for('add_like', project_id=project.id) }}"><span class="glyphicon glyphicon-thumbs-up" style="color:rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
+        </div>
+        <center><a href="{{url_for('add_like', project_id=project.id) }}"><strong style="color:rgba(255,255,255, 0.9);">Like</strong></a></center>
+        <center><p>이 프로젝트를 추천합니다.</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+      {% else %}
       <div class="grid menu_grid">
         <div class="imgholder">
           <center><a href="{{url_for('add_like', project_id=project.id) }}"><span class="glyphicon glyphicon-thumbs-up" style="font-size: 5em;"></span></a><center>
         </div>
-        <center><a href="{{url_for('add_like', project_id=project.id) }}"><strong>Like</strong></a></center>
+        <center><a href="{{url_for('add_like', project_id=project.id) }}"><strong >Like</strong></a></center>
         <center><p>이 프로젝트를 추천합니다.</p></center>
         <!-- <div class="meta">by j osborn</div> -->
       </div>
+      {% endif %}
       <!--즐겨찾기 추가 기능 -->
       <div class="grid menu_grid">
         <div class="imgholder">
-          <center><a href="{{url_for('add_favorite', project_id=project.id) }}"><span class="glyphicon glyphicon-tag" style="font-size: 5em;"></span></a><center>
+          <center><a href="{{url_for('add_favorite', project_id=project.id) }}"><span class="glyphicon glyphicon-tag" style=" color:rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
         </div>
-        <center><a href="{{url_for('add_like', project_id=project.id) }}"><strong>Favorite</strong></a></center>
+        <center><a href="{{url_for('add_like', project_id=project.id) }}"><strong style="color:rgba(255,255,255, 0.9);">Favorite</strong></a></center>
         <center><p>즐겨찾기에 추가합니다.</p></center>
         <!-- <div class="meta">by j osborn</div> -->
       </div>
@@ -186,7 +197,7 @@ $(document).ready(function() {
         {% endfor %}
       {% endif %}
     {% endif %}
-    
+  
 
 
     {% for log in logs%}
@@ -196,12 +207,17 @@ $(document).ready(function() {
           <a href="{{ url_for('log_detail', log_id=log.id) }}"><img src="/show/{{log.file_key}}"></a>
         </div>
         {% endif %} -->
-        <strong><a href="{{ url_for('log_detail', log_id=log.id) }}">{{log.title|truncate(10)|safe}}</a></strong>
-        <p>{{log.content|truncate(20)|safe}}</p>
+        <strong><a href="{{ url_for('log_detail', log_id=log.id) }}">{{log.title|truncate(7)|safe}}
+            {% for i in log.comments %}
+              {% if loop.index0 == 0 %}
+                ({{loop.length}})
+              {% endif %}
+            {% endfor %}
+        </a></strong>
+        <p>{{log.content|truncate(12)|safe}}</p>
         <div class="meta"><a href="{{ url_for('log_detail', log_id=log.id) }}">{{log.user.name}}</a></div>
       </div>
     {% endfor %}
-
   </div>
 </div>
 

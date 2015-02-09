@@ -4,8 +4,187 @@
 <div style=" padding-top: 70px;"></div>
 <script>
 
+$ (function(){
+  setCategories(1);
+  setCategories(2);
+  setCategories(3);
+  $('#category1_other').hide()
+    $('#category2_other').hide()
+      $('#category3_other').hide()
+   // $('#category1').hide()
+    $('#category2').hide()
+      $('#category3').hide()    
 
-var category = {
+
+  $('.selectCategory1').change(function(){
+    if ($('.selectCategory1').val() == "Other"){
+      $('#category1_other').show()
+      $('#category1').hide()
+    }
+    else if ($('.selectCategory1').val() == "None"){
+      setCategories(1);
+      $('#category1').hide()
+    }
+    else{
+      $('#category1_other').hide()
+      $('#category1').show()
+      setCategories(1);
+    }
+  });
+
+  $('.selectCategory2').change(function(){
+    if ($('.selectCategory2').val() == "Other"){
+      $('#category2_other').show()
+      $('#category2').hide()
+    } 
+    else if ($('.selectCategory2').val() == "None"){
+      setCategories(2);
+      $('#category2').hide()
+    }
+    else{
+      $('#category2_other').hide()
+      $('#category2').show()
+      setCategories(2);
+    }
+  });
+
+  $('.selectCategory3').change(function(){
+    if ($('.selectCategory3').val() == "Other"){
+      $('#category3_other').show()
+      $('#category3').hide()
+    }
+    else if ($('.selectCategory3').val() == "None"){
+      setCategories(3);
+      $('#category3').hide()
+    }
+    else{
+      $('#category3_other').hide()
+      $('#category1').show()
+      setCategories(3);
+    }
+  });
+
+
+})
+
+function setCategories(num){
+    var selected = $(".selectCategory" + num + " option:selected").text();
+
+    // 이전꺼 지우는 코드
+    $('.showCategory' + num).html('');
+
+    $.each(category[selected], function(index, value){
+      if (index == 0)
+        $('<option selected></option>').text(category[selected][index]).appendTo($('.showCategory' + num))
+      else
+        $('<option></option>').text(category[selected][index]).appendTo($('.showCategory' + num))
+   })
+}
+
+</script>
+
+<h1>Project 생성</h1>
+<form role="form" enctype="multipart/form-data"  method='POST'>
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="프로젝트 명" name="project_name">
+  </div>
+
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="프로젝트 설명" name="project_desc">
+  </div>
+
+
+  <div class="form-group has-success">
+   <label>카테고리1(필수)</label>
+   <select  name="group1" class="form-control selectCategory1">
+    <option value="Other">Other(기타)</option>
+    <option value="Arts" selected>Arts</option>
+    <option value="Games">Games</option>
+    <option value="Society">Society</option>
+    <option value="Business">Business</option>
+    <option value="Science">Science</option>
+    <option value="Computers">Computers</option>
+    <option value="Home">Home</option>
+    <option value="Recreation">Recreation</option>
+  </select>
+  <select id="category1" name="category1" multiple class="form-control showCategory1"></select>
+  </div>
+   <div class="form-group" id="category1_other">
+    <input type="text" class="form-control" placeholder="직접 입력" name="category1_other">
+  </div>
+
+   <div class="form-group has-warning">
+   <label>카테고리2(옵션)</label>
+   <select name="group2" class="form-control selectCategory2">
+    <option value="None" selected>None</option>
+    <option value="Other">Other(기타)</option>
+    <option value="Arts">Arts</option>
+    <option value="Games">Games</option>
+    <option value="Society">Society</option>
+    <option value="Business">Business</option>
+    <option value="Science">Science</option>
+    <option value="Computers">Computers</option>
+    <option value="Home">Home</option>
+    <option value="Recreation">Recreation</option>
+  </select>
+  <select id="category2" name="category2" multiple class="form-control showCategory2"></select>
+  </div>
+  <div class="form-group" id="category2_other">
+    <input type="text" class="form-control" placeholder="직접 입력" name="category2_other">
+  </div>
+
+  <div class="form-group has-error">
+    <label>카테고리3(옵션)</label>
+    <select name="group3" class="form-control selectCategory3">
+     <option value="None" selected>None</option>
+     <option value="Other">Other(기타)</option>
+     <option value="Arts">Arts</option>
+     <option value="Games">Games</option>
+     <option value="Society">Society</option>
+     <option value="Business">Business</option>
+     <option value="Science">Science</option>
+     <option value="Computers">Computers</option>
+     <option value="Home">Home</option>
+     <option value="Recreation">Recreation</option>
+   </select>
+   <select id="category3" name="category3" multiple class="form-control showCategory3"></select>
+   </div>
+  <div class="form-group" id="category3_other">
+    <input type="text" class="form-control" placeholder="직접 입력" name="category3_other">
+  </div>
+
+   <div class="form-group has-warning">
+     <p>사진 (1메가 이하) : <input type="file" name="photo" Accept="image/*"></p>
+   </div>
+ 
+   <button type="submit" class="btn btn-default">제출</button>
+</form>
+
+<hr>
+
+<!--여기에 디비 목록 보여주면 되겠다.-->
+<!-- <div class="form-group has-success">
+    <label> 생성 프로젝트 목록(프로젝트아이디,제목,상세,생성일,그룹(카테고리1,2,3)) </label>
+    <select multiple class="form-control">
+    {% for project in projects%}
+      <option>
+      {{project.id}},
+      {{project.title}},
+      {{project.description}}
+      {{project.date_created}},
+      (
+        {% for group in project.groups%}
+          {{group.title}},
+        {% endfor %}
+      )
+      </option>
+    {% endfor %}
+    </select>
+  </div> -->
+
+
+  <script>
+  var category = {
     'None' : [
       'None'
     ],
@@ -211,127 +390,5 @@ var category = {
       ]
 
   };
-
-$ (function(){
-  setCategories(1);
-  setCategories(2);
-  setCategories(3);
-
-  $('.selectCategory1').change(function(){
-    setCategories(1);
-  });
-
-  $('.selectCategory2').change(function(){
-    setCategories(2);
-  });
-
-  $('.selectCategory3').change(function(){
-    setCategories(3);
-  });
-
-})
-
-function setCategories(num){
-  var selected = $(".selectCategory" + num + " option:selected").text();
-
-    $('.showCategory' + num).html('');
-
-    $.each(category[selected], function(index, value){
-     $('<option></option>').text(category[selected][index]).appendTo($('.showCategory' + num))
-   })
-}
-
-</script>
-
-<h1>Project 생성</h1>
-<form role="form" enctype="multipart/form-data"  method='POST'>
-  <div class="form-group">
-    <input type="text" class="form-control" placeholder="프로젝트 명" name="project_name">
-  </div>
-
-  <div>
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="프로젝트 설명" name="project_desc">
-    </div>
-  </div>
-
-  <div class="form-group has-success">
-   <label>그룹1(카테고리1)</label>
-   <select name="group1" class="form-control selectCategory1">
-    <option value="None">None</option>
-    <option value="Arts">Arts</option>
-    <option value="Games">Games</option>
-    <option value="Society">Society</option>
-    <option value="Business">Business</option>
-    <option value="Science">Science</option>
-    <option value="Computers">Computers</option>
-    <option value="Home">Home</option>
-    <option value="Recreation">Recreation</option>
-  </select>
-  <select name="category1" multiple class="form-control showCategory1"></select>
-  </div>
-  
-<!-- 
-   <div class="form-group has-warning">
-   <label>그룹2(카테고리2)</label>
-   <select name="group2" class="form-control selectCategory2">
-    <option value="None">None</option>
-    <option value="Arts">Arts</option>
-    <option value="Games">Games</option>
-    <option value="Society">Society</option>
-    <option value="Business">Business</option>
-    <option value="Science">Science</option>
-    <option value="Computers">Computers</option>
-    <option value="Home">Home</option>
-    <option value="Recreation">Recreation</option>
-  </select>
-  <select name="category2" multiple class="form-control showCategory2"></select>
-  </div>
-
-
-  <div class="form-group has-error">
-    <label>그룹3(카테고리3)</label>
-    <select name="group3" class="form-control selectCategory3">
-     <option value="None">None</option>
-     <option value="Arts">Arts</option>
-     <option value="Games">Games</option>
-     <option value="Society">Society</option>
-     <option value="Business">Business</option>
-     <option value="Science">Science</option>
-     <option value="Computers">Computers</option>
-     <option value="Home">Home</option>
-     <option value="Recreation">Recreation</option>
-   </select>
-   <select name="category3" multiple class="form-control showCategory3"></select>
-   </div> -->
- 
-   <div class="form-group has-warning">
-     <p>사진 (1메가 이하) : <input type="file" name="photo" Accept="image/*"></p>
-   </div>
- 
-   <button type="submit" class="btn btn-default">제출</button>
-</form>
-
-
-</select>
-<hr>
-<!--여기에 디비 목록 보여주면 되겠다.-->
-<div class="form-group has-success">
-    <label> 생성 프로젝트 목록(프로젝트아이디,제목,상세,생성일,그룹(카테고리1,2,3)) </label>
-    <select multiple class="form-control">
-    {% for project in projects%}
-      <option>
-      {{project.id}},
-      {{project.title}},
-      {{project.description}}
-      {{project.date_created}},
-      (
-        {% for group in project.groups%}
-          {{group.title}},
-        {% endfor %}
-      )
-      </option>
-    {% endfor %}
-    </select>
-  </div>
+  </script>
 {% endblock%}

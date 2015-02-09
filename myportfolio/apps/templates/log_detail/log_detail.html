@@ -13,8 +13,18 @@
 }
 </style>
 
+
+<script >
+  $(function(){
+    $('#nav_list').prepend('<li><a style="margin-right:3px;" href="{{url_for("project_detail", proj_id=log.project.id)}}"><span class="glyphicon glyphicon-backward" style="font-size:1.2em; margin-left:10px; color:#EDA900"></span><span style="margin-bottom:1px; ">(뒤로가기)</span></a></li>')
+  })
+</script>
+
+
 <div class="container">
-  <h1>{{log.title}} <a style="margin-left:3px; margin-bottom:2px;" href="{{url_for('delete_log', log_id=log.id)}}" class="btn btn-default " role="button">삭제</a><h4>{{log.date_created}}</h4></h1>
+  <span style="font-size:3em">{{log.title}} <a style="margin-left:3px; margin-bottom:2px;" href="{{url_for('delete_log', log_id=log.id)}}" class="btn btn-default " role="button">삭제</a></span>
+  <h4>{{log.date_created}}</h4>
+
   <hr>
   
   {% if log.file_key%}
@@ -35,7 +45,7 @@
           <div class="radio-inline">
             <label>
               <input style="font-size:1.5em" type="hidden" name="islike" value="just_feed"></input>
-              <span class="glyphicon glyphicon-exclamation-sign" style="color: #F0AD4E; font-size: 2em;">
+              <span class="glyphicon glyphicon-exclamation-sign" style="color: #FF5E00; font-size: 2em;">
             </label>
           </div>
           {% else %}
@@ -52,7 +62,7 @@
         </div>
         {% if g.user.id in members or g.user.id == log.project.user_id %}
           <div class="col-md-2">
-            <button type="submit" class="btn btn-warning">의견 남기기</button>
+            <button type="submit" class="btn btn-danger">의견 남기기</button>
           </div>
         {% else %}
           <div class="col-md-2">
@@ -66,9 +76,9 @@
   
   {% for comment in log.comments%}
     {% if comment.is_like %}
-    <h4 class="llUserPictureInNav" style="color:#5BC0DE ; font-weight:bold"><img src="{{ comment.user.picture }}"> {{comment.user.name}} : {{comment.content}}</h4>
+    <h4 class="llUserPictureInNav" style="color:#5BC0DE ; font-weight:bold"><img src="{{ comment.user.picture }}"> {{comment.user.name}} : {{comment.content}} &nbsp;<a href="{{url_for('add_like_comment', comment_id = comment.id)}}"><span class="glyphicon glyphicon-thumbs-up" style="color: black; font-size:1em"></span></a>&nbsp;{{comment.like_count}}</h4>
     {% else %}
-    <h4 class="llUserPictureInNav" style="color:#F0AD4E ; font-weight:bold"><img src="{{ comment.user.picture }}"> {{comment.user.name}} : {{comment.content}}</h4>
+    <h4 class="llUserPictureInNav" style="color:#FF5E00 ; font-weight:bold"><img src="{{ comment.user.picture }}"> {{comment.user.name}} : {{comment.content}} &nbsp;<a href="{{url_for('add_like_comment', comment_id = comment.id)}}"><span class="glyphicon glyphicon-thumbs-up" style="color: black; font-size:1em"></span></a>&nbsp;{{comment.like_count}}</h4>
     {% endif %}
   {% endfor %}
       

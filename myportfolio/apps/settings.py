@@ -11,7 +11,7 @@ class Config:
     # Set secret key to use session
     SECRET_KEY = "likelion-flaskr-secret-key"
     debug = False
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=15)
 
 
 class Production(Config):
@@ -20,7 +20,7 @@ class Production(Config):
     ADMIN = "jeinsong200@gmail.com"
     
 
-    SQLALCHEMY_DATABASE_URI = 'mysql+gaerdbms:///portfolio?instance=do-portfolio:jein-song2'
+    SQLALCHEMY_DATABASE_URI = 'mysql+gaerdbms:///portfolio?instance=my-port4lio:jeinsong'
     
     migration_directory = 'migrations'
 

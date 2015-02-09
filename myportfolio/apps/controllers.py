@@ -4,13 +4,15 @@ from flask.ext.oauthlib.client import OAuthException
 
 from flask.ext.login import login_user, logout_user, current_user, login_required
 
-from flask import render_template, request, redirect, url_for, flash, session, g
+from flask import render_template, request, redirect, url_for, flash, session, g, jsonify
 
 from sqlalchemy import desc
 
 from apps import app, db, login_manager, facebook
 
 from core import variables, OAuthManagement
+
+import operator 
 
 import pusher
 
@@ -20,6 +22,9 @@ class Photo(google.db.Model):
     photo = google.db.BlobProperty()
 
 from apps.models import (User, Comment, Log, Group, Project, Member, Favorite)
+
+#coding: utf8;
+
 
 
 @login_manager.unauthorized_handler
@@ -36,9 +41,6 @@ def load_user(id):
 @app.before_request
 def before_request():
     g.user = current_user
-
-
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -157,7 +159,42 @@ def main():
     #     result += '<br>'
     # return result;
 
-    return render_template('main/main.html', projects=projects)
+    # 그냥 g.user하면 잘 안됨.
+    user = User.query.get(g.user.id)
+
+    my_projects = user.projects # 내가 만든 프로젝트
+    participates = user.members 
+
+    for member in participates:
+        my_projects.append(member.project) 
+
+    # 관련 친구 뽑아내기 
+    related_person = []
+    for project in my_projects:
+        logs = project.logs
+        comments = []
+        for log in logs:
+            comments += log.comments
+        for comment in comments:
+            if comment.user.id != user.id :
+                related_person.append(comment.user)
+
+    # 중복된거 제거하기
+    related_person_set = set(related_person) 
+
+    # 카운트를 세서 페어를 만드기(딕셔너리로)
+    counted_pair = {}
+    for person in related_person_set:
+        counted_pair[person.id] = [person, related_person.count(person)]
+
+    # http://stackoverflow.com/questions/4690416/sorting-dictionary-using-operator-itemgetter
+    lst = sorted(counted_pair.iteritems(), key=lambda (k,v): operator.itemgetter(1)(v), reverse=True)
+    # 튜플로 떨어짐 (user_id, [user객체, 카운트])
+    related_person = []
+    for item in lst:
+        related_person.append( (item[1][0], item[1][1]) )
+
+    return render_template('main/main.html', projects=projects, related_person=related_person)
 
 
 @app.route('/my_project')
@@ -171,7 +208,19 @@ def my_project():
     # 유저가 초대된 프로젝트 정보도..
     members = user.members
 
-    return render_template('main/main.html', is_mine=True , projects=projects, members=members)
+    return render_template('main/main.html', mode="mine" , projects=projects, members=members)
+
+@app.route('/ones_project/<user_id>')
+def ones_project(user_id):
+    user = User.query.get(user_id)
+
+    projects = user.projects
+
+    members = user.members
+
+    return render_template('main/main.html', mode="others" , projects=projects, members=members, user_id=user_id)
+
+
 
 @app.route('/delete_project', methods=['GET', 'POST'] )
 def delete_project():
@@ -263,49 +312,11 @@ def add_member_to(proj_id):
         return redirect(url_for('project_detail', proj_id=proj_id))
 
     users = User.query.all()
+    project = Project.query.get(proj_id)
 
-    return render_template('add_member/add_member.html', users= users)
-
-
-
-@app.route('/test', methods=['GET', 'POST'])
-def test():
-
-    group_list = []
-    user_list = []
-
-    if request.method == 'POST':
-        if request.form['hidden_val'] == 'test1':
-            user_id = request.form['user_id']
-
-            user = User.query.get(user_id)
-
-            users_comments = user.comments
-
-            # return users_comments[0].content
-
-            for comment in users_comments:
-                group_list.append(comment.log.project.groups[0].title)
-                group_list.append(comment.log.project.groups[1].title)
-                group_list.append(comment.log.project.groups[2].title)
-
-            group_list = set(group_list)
-
-        elif request.form['hidden_val'] == 'test2':
-            project_id = request.form['project_id']
-
-            project = Project.query.get(project_id)
-
-            for log in project.logs:
-                for comment in log.comments:
-                    if comment.user_id not in user_list:
-                        user_list.append(comment.user_id)
+    return render_template('add_member/add_member.html', users= users, project=project)
 
 
-    users = User.query.all()
-    projects = Project.query.all()
-
-    return render_template('test/test.html', users = users, group_list=group_list, projects=projects, user_list=user_list)
 
 @app.route('/time_line', methods=['GET'])
 def time_line():
@@ -326,16 +337,13 @@ def create_project():
         project_desc = request.form['project_desc']
 
         # 여기서 그룹은 쓸대 없는 짓하고 있는거임..?
-        g1 = request.form['group1']
         c1 = request.form['category1']
 
-        g2 = request.form['group2']
         c2 = request.form['category2']
 
-        g3 = request.form['group3']
         c3 = request.form['category3']
 
-        
+
         # file 저장
         file_key = None
         if request.files['photo']:
@@ -357,26 +365,31 @@ def create_project():
                 user_id = g.user.id,
                 user = user,
             )
+        db.session.add(proj)
+
 
         g1 = Group(
                 project = proj,
                 title = c1,
             )
-        g2 = Group(
-                project = proj,
-                title = c2,
-            )
-
-        g3 = Group(
-                project = proj,
-                title = c3,
-            )
-
-
-        db.session.add(proj)
         db.session.add(g1)
-        db.session.add(g2)
-        db.session.add(g3)
+
+        if c2 != "None":
+            g2 = Group(
+                    project = proj,
+                    title = c2,
+                )
+            db.session.add(g2)
+
+
+        if c3 != "None":
+            g3 = Group(
+                    project = proj,
+                    title = c3,
+                )
+            db.session.add(g3)
+
+        
         db.session.commit()
 
         flash('create project success','success')
@@ -423,15 +436,35 @@ def make_log(project_id):
                 file_key = file_key
             )
 
+        # 명사 추출기
+        import nounx
+
+        noun_extractor = nounx.NounX()
+
+        """
+        1. 키워드 추출하고
+        2. 카테고리 태그 테이블 수정한다. 
+        """ 
+
+        tags = noun_extractor.extract_noun(content)
+        # 가중치 계산해서 줄이기
+        tags = set(tags)
+
+        project.tags_list =",".join(tags)
+        # 태그 저장
+
         db.session.add(log)
         db.session.commit()
 
         flash('write log success','success')
 
-        return redirect(url_for('project_detail', proj_id=project_id))
+
+        return redirect(url_for('project_detail', proj_id=project_id, tags=tags))
 
     logs = Log.query.all()
-    return render_template('make_log/make_log.html', logs = logs)
+    project = Project.query.get(project_id)
+    return render_template('make_log/make_log.html', logs = logs, project=project)
+
 
 
 @app.route('/make_log_delete_sche/<project_id>/<item_num>/<title>', methods=['GET', 'POST'])
@@ -467,6 +500,7 @@ def make_log_delete_sche(project_id, item_num, title):
                 file_key = file_key
             )
 
+        db.session.commit()
         db.session.add(log)
         db.session.commit()
 
@@ -482,11 +516,11 @@ def make_log_delete_sche(project_id, item_num, title):
         project.schedule = list_str
         db.session.commit()
 
-
         return redirect(url_for('project_detail', proj_id=project_id))
 
+    project = Project.query.get(project_id)
     logs = Log.query.all()
-    return render_template('make_log/make_log.html', logs = logs, title=title)
+    return render_template('make_log/make_log.html', logs = logs, title=title, project=project)
 
 
 
@@ -596,13 +630,97 @@ def add_favorite(project_id):
 
 @app.route('/add_like/<project_id>')
 def add_like(project_id):
+    
     project = Project.query.get(project_id)
 
-    project.like_count += 1
+    if project.like_history==None or len( project.like_history) == 0: 
+        project.like_history = g.user.id
+        project.like_count += 1
+
+    elif g.user.id not in project.like_history:
+        project.like_history += "," + g.user.id
+        project.like_count += 1
+
+    else:
+        like_history = project.like_history.split(",")
+        like_history.remove(g.user.id)
+        project.like_history = ",".join(like_history)
+        project.like_count -= 1
 
     db.session.commit()
 
     return redirect(url_for('project_detail', proj_id=project_id))
+
+@app.route('/add_like_comment/<comment_id>')
+def add_like_comment(comment_id):
+    comment = Comment.query.get(comment_id)
+    log_id = comment.log.id
+    comment.like_count += 1
+
+    db.session.commit()
+
+    return redirect(url_for('log_detail', log_id=log_id))
+
+
+
+#####
+#search
+#####
+@app.route('/search')
+def search():
+    keyword = request.args['keyword'].lower()
+    # 사람 검색
+    userlist = User.query.all()
+    persons = []
+    for user in userlist:
+        if keyword in user.name.lower():
+            # result.append({'title': user.name, 'thumb':user.picture, 'text':'test', 'tags':user.id, 'loc':'#'})
+            persons.append(user)
+
+    # 프로젝트 검색
+    projectlist = Project.query.all()
+    projects = []
+    for project in projectlist:
+        tags = project.tags_list.split(',')
+
+        if keyword in project.title.lower():
+            # result.append({'title': user.name, 'thumb':user.picture, 'text':'test', 'tags':user.id, 'loc':'#'})
+            projects.append(project)
+        elif keyword in tags:
+            projects.append(project)
+
+    return render_template('search/search.html', persons=persons, projects=projects)
+
+
+@app.route('/add_friend/<user_id>')
+def add_friend(user_id):
+
+    # 나
+    user = g.user
+
+    if user.flist==None or len(user.flist) == 0: 
+        user.flist = user_id 
+    elif user_id not in user.flist:
+        # 친구가 아닐 때
+        user.flist += "," + user_id
+    else:
+        # 친구일 때
+        flist = user.flist.split(',')
+        flist.remove(user_id)
+        user.flist =  ",".join(flist)
+
+    db.session.commit()
+
+    return redirect(url_for('ones_project', user_id=user_id))
+
+@app.route('/show_flist')
+def show_flist():
+    flist = g.user.flist.split(',')
+    persons = []
+    for f in flist:
+        persons.append(User.query.get(f))
+        
+    return render_template('search/search.html', persons=persons)
 # #
 # # @password check
 # #
