@@ -147,6 +147,8 @@ class User(db.Model):
     date_last_logged_in = db.Column(db.DateTime)
     
     flist = db.Column(db.Text())
+    
+    favlist = db.Column(db.Text())
     # id,id,id,id,
 
     def is_authenticated(self):
