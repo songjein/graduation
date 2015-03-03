@@ -646,18 +646,22 @@ def favorite():
 @app.route('/add_favorite/<project_id>', methods=['GET', 'POST'])
 def add_favorite(project_id):
 
-    project = Project.query.get(project_id)
 
-    favorite = Favorite(
-            user_id=g.user.id,
-            user = g.user,
-            project_id=project_id,
-            project = project
-        )
-    db.session.add(favorite)
+    # 나
+    user = g.user
+
+    if user.favlist==None or len(user.favlist) == 0: 
+        user.favlist = project_id 
+    elif project_id not in user.favlist:
+        # 친구가 아닐 때
+        user.favlist += "," + project_id
+    else:
+        # 친구일 때
+        favlist = user.favlist.split(',')
+        favlist.remove(project_id)
+        user.favlist =  ",".join(favlist)
+
     db.session.commit()
-
-    flash('add favorite success!')
 
     return redirect(url_for('project_detail', proj_id=project_id))
 
