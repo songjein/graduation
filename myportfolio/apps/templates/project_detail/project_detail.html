@@ -155,8 +155,8 @@ $(document).ready(function() {
       {% endif %}
     {% else %}
     
-      <!-- 좋아요 기능 -->
-      {% if g.user.id not in project.like_history %}
+      <!-- 좋아요 기능 None 때문에 에러 났었음 -->
+      {% if project.like_history == None or g.user.id not in project.like_history %}
       <div class="grid menu_grid">
         <div class="imgholder">
           <center><a href="{{url_for('add_like', project_id=project.id) }}"><span class="glyphicon glyphicon-thumbs-up" style="color:rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>
@@ -175,6 +175,8 @@ $(document).ready(function() {
         <!-- <div class="meta">by j osborn</div> -->
       </div>
       {% endif %}
+
+
       <!--즐겨찾기 추가 기능 -->
       <div class="grid menu_grid">
         <div class="imgholder">

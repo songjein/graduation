@@ -101,7 +101,8 @@ $(document).ready(function() {
     </div>
     {% elif mode == "others"%}
     
-     {% if user_id not in g.user.flist%}
+    <!-- None 때문에 에러 뜸 -->
+     {% if g.user.flist == None or user_id not in g.user.flist%}
         <div class="grid menu_grid">
             <div class="imgholder">
               <center><a href="{{url_for('add_friend', user_id=user_id)}}"><span class="glyphicon glyphicon-plus" style="color: rgba(255,255,255, 0.9); font-size: 4em;"></span><span class="glyphicon glyphicon-user" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a></center>
@@ -179,6 +180,20 @@ $(document).ready(function() {
       {% endfor%}
     {% endif %}
 
+    {% if fbfriends %}
+      {% for person in fbfriends %}
+      <div class="grid" style="background:#FFFDCC">
+        <center>
+          <div class="imgholder">
+            <a href="{{url_for('ones_project', user_id=person.id)}}"><img src="{{person.picture}}"></a>
+          </div>
+          <center><strong><a href="#">{{person.name}}</a></strong></center>
+          <center><p>MyPortfolio를 이용중입니다!</p></center>
+        </center>
+      </div>
+      {% endfor%}
+    {% endif %}
+
 
     {% for proj in projects %}
       <div class="grid">
@@ -209,6 +224,7 @@ $(document).ready(function() {
         </div>
       {% endfor %}
     {% endif %}
+
 
   </div>
 </div>

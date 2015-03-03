@@ -21,6 +21,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = u'로그인이 필요합니다.'
 
+
 # open auth
 oauth = OAuth(app)
 #
@@ -31,13 +32,14 @@ facebook = oauth.remote_app(
     consumer_key=app.config.get('FACEBOOK_APP_ID'),
     consumer_secret=app.config.get('FACEBOOK_APP_SECRET'),
     request_token_params={
-        'scope': ['email', 'public_profile']
+        'scope': [ 'public_profile', 'publish_actions', 'user_friends'  ]
     },
     base_url='https://graph.facebook.com/',
     request_token_url=None,
     access_token_url='/oauth/access_token',
     authorize_url='https://www.facebook.com/dialog/oauth',
 )
+
 
 
 db = SQLAlchemy(app)

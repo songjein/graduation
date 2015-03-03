@@ -82,7 +82,7 @@ $(document).ready(function() {
   
   <div id="container">
 
-    {% if persons%}
+    {% if persons %}
       {% for person in persons %}
       <div class="grid">
         <center>
@@ -92,8 +92,9 @@ $(document).ready(function() {
           <center><strong><a href="#">{{person.name}}</a></strong></center>
         </center>
       </div>
-      {% endfor%}
+      {% endfor %}
     {% endif %}
+
     
     {% if projects%}
       {% for proj in projects %}

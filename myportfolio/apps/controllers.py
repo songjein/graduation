@@ -74,6 +74,8 @@ def facebook_authorized(resp):
     session['oauth_token'] = (resp['access_token'], '')
 
     userinfo = facebook.get('/me')
+    # userinfo = facebook.get('/me/friends')
+    # userinfo = facebook.post('/me/feed', data={'link': 'www.naver.com', 'message':'테스투 test'});
 
     # return userinfo.data['id']
     # return str(userinfo.data)
@@ -146,10 +148,6 @@ def logout():
 #     return render_template('join/join.html', users = users)
 
 
-@app.route('/main')
-def main():
-    
-    projects = Project.query.all()
 
     # result = ''
     # for project in projects:
@@ -158,6 +156,11 @@ def main():
     #         result += member.user_id
     #     result += '<br>'
     # return result;
+
+@app.route('/main')
+def main():
+    
+    projects = Project.query.all()
 
     # 그냥 g.user하면 잘 안됨.
     user = User.query.get(g.user.id)
@@ -189,12 +192,33 @@ def main():
 
     # http://stackoverflow.com/questions/4690416/sorting-dictionary-using-operator-itemgetter
     lst = sorted(counted_pair.iteritems(), key=lambda (k,v): operator.itemgetter(1)(v), reverse=True)
+
     # 튜플로 떨어짐 (user_id, [user객체, 카운트])
     related_person = []
     for item in lst:
         related_person.append( (item[1][0], item[1][1]) )
+    # 아직 자르진 않음
 
-    return render_template('main/main.html', projects=projects, related_person=related_person)
+    # 페북 친구 가져오기
+    fbfriends = facebook.get('/me/friends')
+    fbfriends = fbfriends.data['data']
+
+    # return str(fbfriends[0]['id'])
+ 
+    tmpList = []
+    for i in range(len(fbfriends)):
+        # 페북 친구가 myport4lio에서 내 친구가 아니라면
+        # None 때문에 에러 ! flist가 처음엔 None이지 ""이 아니기 때문에 에러가남.
+        if g.user.flist and fbfriends[i]['id'] not in g.user.flist:
+            tmpList.append(User.query.get(fbfriends[i]['id']))
+        elif g.user.flist is None:
+            tmpList.append(User.query.get(fbfriends[i]['id']))
+
+
+    fbfriends = tmpList
+
+
+    return render_template('main/main.html', projects=projects, related_person=related_person, fbfriends=fbfriends)
 
 
 @app.route('/my_project')
@@ -409,6 +433,8 @@ def make_log(project_id):
         title = request.form['title']
         content = request.form['content']
 
+        
+
         # file 저장
 
         file_key = None
@@ -455,6 +481,14 @@ def make_log(project_id):
 
         db.session.add(log)
         db.session.commit()
+
+        # facebook에 기록
+        if request.form['fbcheck'] != None and request.form['fbcheck'] == "on" :
+            userinfo = facebook.post('/me/feed', 
+                data={
+                'link': 'http://my-port4lio.appspot.com/project_detail/'+ project_id, 
+                'message': g.user.name + u'님이 "' + project.title + u'" 프로젝트에 로그를 남기셨습니다.'
+                })
 
         flash('write log success','success')
 
@@ -715,12 +749,16 @@ def add_friend(user_id):
 
 @app.route('/show_flist')
 def show_flist():
-    flist = g.user.flist.split(',')
-    persons = []
-    for f in flist:
-        persons.append(User.query.get(f))
+    
+    
+    if g.user.flist != None:
+        flist = g.user.flist.split(',')
+    
+        persons = []
+        for f in flist:
+            persons.append(User.query.get(f))
         
-    return render_template('search/search.html', persons=persons)
+    return render_template('search/search.html', persons=persons, flag="show_flist")
 # #
 # # @password check
 # #
