@@ -16,10 +16,10 @@ import operator
 
 import pusher
 
-# import google.appengine.ext as google 
+import google.appengine.ext as google 
 
-# class Photo(google.db.Model):
-#     photo = google.db.BlobProperty()
+class Photo(google.db.Model):
+    photo = google.db.BlobProperty()
 
 from apps.models import (User, Comment, Log, Group, Project, Member, Favorite)
 
@@ -639,7 +639,13 @@ def make_comment():
 
 @app.route('/favorite/', methods=['GET', 'POST'])
 def favorite():
-    favorites = g.user.favorites
+    favorites = []
+    # favorites = g.user.favlist.split(',')
+    if g.user.favlist != None:
+        pidList = g.user.favlist.split(',')
+
+        for pid in pidList:
+            favorites.append(Project.query.get(pid))
 
     return render_template('favorite/favorites.html', favorites=favorites)
 
@@ -652,11 +658,11 @@ def add_favorite(project_id):
 
     if user.favlist==None or len(user.favlist) == 0: 
         user.favlist = project_id 
-    elif project_id not in user.favlist:
-        # 친구가 아닐 때
+    elif str(project_id) not in user.favlist:
+        # 즐찾이 아닐 때
         user.favlist += "," + project_id
     else:
-        # 친구일 때
+        # 즐찾일 때
         favlist = user.favlist.split(',')
         favlist.remove(project_id)
         user.favlist =  ",".join(favlist)

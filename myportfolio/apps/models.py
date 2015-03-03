@@ -33,6 +33,10 @@ class Project(db.Model):
         primaryjoin="Project.user_id==User.id",
         backref=db.backref('projects', cascade='all, delete-orphan', lazy='dynamic'))
 
+    def __repr__(self):
+        return '<Proj %s>' % (self.title)
+
+
 class ProjectTag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     proj_id = db.Column(db.Integer)
