@@ -134,7 +134,7 @@ class Favorite(db.Model):
         primaryjoin="Favorite.project_id==Project.id",
         backref=db.backref('favorites', cascade='all, delete-orphan', lazy='dynamic')) #Project쪽에서 일로 넘어올 필요는 x ?
 
-# user
+# user...
 class User(db.Model):
     # id = db.Column(db.String(255), primary_key=True)
 
