@@ -16,10 +16,10 @@ import operator
 
 import pusher
 
-import google.appengine.ext as google 
+# import google.appengine.ext as google 
 
-class Photo(google.db.Model):
-    photo = google.db.BlobProperty()
+# class Photo(google.db.Model):
+#     photo = google.db.BlobProperty()
 
 from apps.models import (User, Comment, Log, Group, Project, Member, Favorite)
 
@@ -732,6 +732,7 @@ def add_friend(user_id):
     # 나
     user = g.user
 
+    # 이걸 ""로 할걸 그랬어 괜히 None으로해서..
     if user.flist==None or len(user.flist) == 0: 
         user.flist = user_id 
     elif user_id not in user.flist:
