@@ -20,7 +20,7 @@
 				</div> <!-- cd-timeline-img -->
 
 				<div class="cd-timeline-content">
-					<h2>{{log.title}}</h2>
+					<h2 style="color:red">{{log.title|safe}}</h2>
 
 					{% if log.file_key%}
 				      <img src="/show/{{log.file_key}}" alt="사진 없음">
@@ -30,7 +30,7 @@
 				      <!-- {{log.project.id}}&nbsp;,&nbsp;
 				      {{log.user.id}}&nbsp;&nbsp; -->
 				    
-					<p>{{log.content}}</p>
+					<p>{{log.content|safe}}</p>
           			 <a href="{{url_for('log_detail', log_id=log.id)}}" class="btn btn-warning btn-lg col-md-12" role="button">Read more</a>
 					<span class="cd-date">{{log.date_created}}</span>
 				</div> <!-- cd-timeline-content -->

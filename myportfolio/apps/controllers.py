@@ -21,7 +21,7 @@ import google.appengine.ext as google
 class Photo(google.db.Model):
     photo = google.db.BlobProperty()
 
-from apps.models import (User, Comment, Log, Group, Project, Member, Favorite)
+from apps.models import (User, Comment, Log, Group, Project, Member)
 
 #coding: utf8;
 
@@ -315,30 +315,43 @@ def statistics(proj_id):
 @app.route('/add_member_to/<proj_id>', methods=['GET', 'POST'])
 def add_member_to(proj_id):
 
-    if request.method == 'POST':
-        user_id = request.form['user_id']
-        user = User.query.get(user_id)
+    matched_users = []
 
-        project = Project.query.get(proj_id)
+    if 'name' in request.args :
+        keyword = request.args['name']
 
-        #원랜 다 안써도 되지 않나? 자동으로 채워주는 부분이 어디까진지 몰라서 다쓴다.
-        member = Member(
-                user = user,
-                user_id = user_id,
-                project = project,
-                project_id = proj_id,
-            )
-        db.session.add(member)
-        db.session.commit()
+        users = User.query.all()
+        
+        # 이미 팀원인거 걸러주기
+        for user in users:
+            if keyword in user.name:
+                matched_users.append(user)
 
-        flash('add success!','success')
 
-        return redirect(url_for('project_detail', proj_id=proj_id))
+    # if request.method == 'POST':
+    #     user_id = request.form['user_id']
+    #     user = User.query.get(user_id)
 
-    users = User.query.all()
+    #     project = Project.query.get(proj_id)
+
+    #     #원랜 다 안써도 되지 않나? 자동으로 채워주는 부분이 어디까진지 몰라서 다쓴다.
+    #     member = Member(
+    #             user = user,
+    #             user_id = user_id,
+    #             project = project,
+    #             project_id = proj_id,
+    #         )
+    #     db.session.add(member)
+    #     db.session.commit()
+
+    #     flash('add success!','success')
+
+    #     return redirect(url_for('project_detail', proj_id=proj_id))
+
+    # users = User.query.all()
     project = Project.query.get(proj_id)
 
-    return render_template('add_member/add_member.html', users= users, project=project)
+    return render_template('add_member/add_member.html', matched_users= matched_users, project=project)
 
 
 
@@ -648,6 +661,8 @@ def favorite():
             favorites.append(Project.query.get(pid))
 
     return render_template('favorite/favorites.html', favorites=favorites)
+
+
 
 @app.route('/add_favorite/<project_id>', methods=['GET', 'POST'])
 def add_favorite(project_id):
