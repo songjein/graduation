@@ -81,10 +81,16 @@ $(document).ready(function() {
 <div id="wrapper">
   
   <div id="container">
-    
-    {% if favorites|length == 0 %}
-      즐겨찾기 목록이 없습니다...
-    {% else %}
+      
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="#"><span class="glyphicon glyphicon-tags" style="color: #FFBB00; font-size: 5em;"></span></a><center>
+        </div>
+        <center><strong>Favorite</strong></center>
+        <center><p>즐겨찾기<br>&nbsp;</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+  
       {% for project in favorites %}
 
       <div class="grid">
@@ -96,7 +102,7 @@ $(document).ready(function() {
         <div class="meta">{{project.user.name}}</div>
       </div>
       {% endfor%}
-    {% endif %}
+
 
 
   </div>

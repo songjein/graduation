@@ -156,6 +156,9 @@ class User(db.Model):
     # 즐겨찾기 리스트
     favlist = db.Column(db.Text())
 
+    # 멤버 리스트
+    # mprojlist = db.Column(db.Text())
+
     def is_authenticated(self):
         return True
 

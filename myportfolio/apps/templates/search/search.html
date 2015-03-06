@@ -76,12 +76,33 @@ $(document).ready(function() {
 <!-- <link rel="shortcut icon" href="http://www.inwebson.com/wp-content/themes/inwebson2/favicon.ico" /> -->
 <!-- <link rel="canonical" href="http://www.inwebson.com/demo/blocksit-js/demo2/" /> -->
 
-
+    
 <!-- Content -->
 <div id="wrapper">
   
   <div id="container">
+    
+     {% if flag == "show_flist"%}
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="#"><span class="glyphicon glyphicon-user" style="color: #FFBB00; font-size: 5em;"></span></a></center>
+        </div>
+        <center><strong>Friend list</strong></center>
+        <center><p>친구 리스트 보기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+      {% elif flag == "search_result"%}
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a href="#"><span class="glyphicon glyphicon-search" style="color: #FFBB00; font-size: 5em;"></span></a></center>
+        </div>
+        <center><strong>Search result</strong></center>
+        <center><p>검색 결과 보기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+     {% endif %}
 
+  
     {% if persons %}
       {% for person in persons %}
       <div class="grid">
@@ -90,6 +111,7 @@ $(document).ready(function() {
             <a href="{{url_for('ones_project', user_id=person.id)}}"><img src="{{person.picture}}"></a>
           </div>
           <center><strong><a href="#">{{person.name}}</a></strong></center>
+          <center><p>검색 결과 보기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></center>
         </center>
       </div>
       {% endfor %}

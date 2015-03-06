@@ -205,6 +205,8 @@ def main():
 
     # return str(fbfriends[0]['id'])
  
+
+    # 친구 추천
     tmpList = []
     for i in range(len(fbfriends)):
         # 페북 친구가 myport4lio에서 내 친구가 아니라면
@@ -213,10 +215,10 @@ def main():
             tmpList.append(User.query.get(fbfriends[i]['id']))
         elif g.user.flist is None:
             tmpList.append(User.query.get(fbfriends[i]['id']))
-
+        elif g.user.flist == "":
+            tmpList.append(User.query.get(fbfriends[i]['id']))    
 
     fbfriends = tmpList
-
 
     return render_template('main/main.html', projects=projects, related_person=related_person, fbfriends=fbfriends)
 
@@ -318,13 +320,13 @@ def add_member_to(proj_id):
     matched_users = []
 
     if 'name' in request.args :
-        keyword = request.args['name']
+        keyword = request.args['name'].lower()
 
         users = User.query.all()
         
         # 이미 팀원인거 걸러주기
         for user in users:
-            if keyword in user.name:
+            if keyword in user.name.lower():
                 matched_users.append(user)
 
 
@@ -654,7 +656,9 @@ def make_comment():
 def favorite():
     favorites = []
     # favorites = g.user.favlist.split(',')
-    if g.user.favlist != None:
+    
+    # Nono -> ""
+    if g.user.favlist != None and g.user.favlist != "":
         pidList = g.user.favlist.split(',')
 
         for pid in pidList:
@@ -748,9 +752,10 @@ def search():
         elif keyword in tags:
             projects.append(project)
 
-    return render_template('search/search.html', persons=persons, projects=projects)
+    return render_template('search/search.html', persons=persons, projects=projects, flag="search_result")
 
 
+# 최초엔 None이 flist에 들어가있고, 친구가 추가됐다가 다 삭제 돼었을 때는 ""이다
 @app.route('/add_friend/<user_id>')
 def add_friend(user_id):
 
@@ -775,16 +780,33 @@ def add_friend(user_id):
 
 @app.route('/show_flist')
 def show_flist():
-    
-    
-    if g.user.flist != None:
+
+    persons = []
+
+    # 문제가 있었었다.
+    # 일단 원래 조건이 != None밖에 없었고 만약 친구가 없을 경우 ""으로 되는데,
+    # 여기서 일단 ""이 None이 아니므로 True가 되어서 이프문에 들어가고, person에 []가 들어가게된다.
+    # 템플릿에선 []이지만 포문을 돌린것 같다.
+
+    if g.user.flist != None and len(g.user.flist) > 0:
+        # return "g.user.flist : " + g.user.flist + " length : " + str(len(g.user.flist))
         flist = g.user.flist.split(',')
     
-        persons = []
         for f in flist:
             persons.append(User.query.get(f))
-        
+
     return render_template('search/search.html', persons=persons, flag="show_flist")
+
+
+@app.route('/myportfolio')
+def myportfolio():
+
+    user = g.user
+
+    project = user.projects
+
+    return render_template('myportfolio/myportfolio.html')
+
 # #
 # # @password check
 # #
