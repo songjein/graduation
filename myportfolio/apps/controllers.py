@@ -803,9 +803,9 @@ def myportfolio():
 
     user = g.user
 
-    project = user.projects
+    projects = user.projects
 
-    return render_template('myportfolio/myportfolio.html')
+    return render_template('myportfolio/myportfolio.html', projects = projects)
 
 # #
 # # @password check
