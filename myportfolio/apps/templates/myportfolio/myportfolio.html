@@ -27,9 +27,9 @@
 				    {% else %}
 				      (사진 없음)
 				    {% endif%}
-			    
+				   
 					<p>{{project.description}}</p>
-          			 <a href="{{url_for('project_detail', proj_id=project.id)}}" class="btn btn-danger btn-lg col-md-12" role="button">자세히 보기</a>
+          			 <a href="{{url_for('project_detail', proj_id=project.id)}}" class="btn btn-warning btn-lg col-md-12" role="button">자세히 보기</a>
 					<span class="cd-date">{{project.date_created}}</span>
 				</div> <!-- cd-timeline-content -->
 			</div> <!-- cd-timeline-block -->
@@ -37,6 +37,30 @@
 	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	{% endfor %}
 
+	{% for project in mprojects%}
+
+			<div class="cd-timeline-block">
+				<div class="cd-timeline-img cd-movie">
+					<!-- <img src="{{ url_for('static', filename='images/cd-icon-picture.svg') }}" alt="Picture"> -->
+				</div> <!-- cd-timeline-img -->
+
+				<div class="cd-timeline-content">
+					<h2 style="color:red">{{project.title}}</h2>
+
+					{% if project.file_key%}
+				      <img src="/show/{{project.file_key}}" alt="사진 없음">
+				    {% else %}
+				      (사진 없음)
+				    {% endif%}
+				   
+					<p>{{project.description}}</p>
+          			 <a href="{{url_for('project_detail', proj_id=project.id)}}" class="btn btn-warning btn-lg col-md-12" role="button">자세히 보기</a>
+					<span class="cd-date">{{project.date_created}}</span>
+				</div> <!-- cd-timeline-content -->
+			</div> <!-- cd-timeline-block -->
+	{% else %}
+	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	{% endfor %}
 	</section> <!-- cd-timeline -->
 
 	<script src="{{ url_for('static', filename='js/main.js') }}"></script> <!-- Resource jQuery -->

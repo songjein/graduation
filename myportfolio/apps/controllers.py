@@ -835,10 +835,13 @@ def myportfolio():
     user = g.user
 
     projects = user.projects
-
+    mprojects = [];
+    m_idlist = user.mprojects.split(',')
+    for mid in m_idlist:
+        mprojects.append(Project.query.get(mid))
     # 멤퍼추가
 
-    return render_template('myportfolio/myportfolio.html', projects = projects)
+    return render_template('myportfolio/myportfolio.html', projects = projects, mprojects = mprojects)
 
 # #
 # # @password check
