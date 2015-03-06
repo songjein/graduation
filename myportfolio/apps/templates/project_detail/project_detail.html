@@ -97,7 +97,7 @@ $(document).ready(function() {
       <center><strong>{{project.title}}</strong></center>
       <center><p>{{project.description}}</p></center>
       <center><p style="color:gray">구성원: <span style="font-weight:bold; color:yellow">{{project.user.name}}</span>
-        {% for member in project.members%},{{member.user.name}}{% endfor %}
+        {% for member in members%},{{member.name}}{% endfor %}
       </p></center>
       <center style="font-size:2em"><span class="glyphicon glyphicon-thumbs-up" style="color: #35BFFF;"></span>&nbsp;{{project.like_count}}</center>
       <!-- <div class="meta">by j osborn</div> -->
@@ -105,7 +105,7 @@ $(document).ready(function() {
     
 
 
-    {% if g.user.id in members or g.user.id == project.user_id %}
+    {% if (project.memlist and g.user.id in project.memlist) or g.user.id == project.user_id %}
       <div class="grid menu_grid">
         <div class="imgholder">
           <center><a href="{{url_for('meeting', proj_id = project.id)}}"><span class="glyphicon glyphicon-list-alt" style="color: rgba(255,255,255, 0.9); font-size: 5em;"></span></a><center>

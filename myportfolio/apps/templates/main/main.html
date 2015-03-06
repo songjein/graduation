@@ -210,20 +210,19 @@ $(document).ready(function() {
 
     
     <!--이거 왜있는거지- myproject 보여줄 때 넣어줌.-->
-    {% if members %}
-      {% for member in members %}
+      {% for proj in member_projs %}
         <div class="grid" style="background-color:#E4F7BA">
-          {% if member.project.file_key %}
+          {% if proj.file_key %}
           <div class="imgholder">
-            <a href="{{ url_for('project_detail', proj_id=member.project.id) }}"><img src="/show/{{member.project.file_key}}"></a>
+            <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><img src="/show/{{proj.file_key}}"></a>
           </div>
           {% endif %}
-          <a href="{{ url_for('project_detail', proj_id=member.project.id) }}"><strong>{{member.project.title|truncate(9)}}</strong></a>
-          <p>{{member.project.description|truncate(25)}}</p>
-          <div class="meta">{{member.project.user.name}}</div>
+          <a href="{{ url_for('project_detail', proj_id=proj.id) }}"><strong>{{proj.title|truncate(9)}}</strong></a>
+          <p>{{proj.description|truncate(25)}}</p>
+          <div class="meta">{{proj.user.name}}</div>
         </div>
       {% endfor %}
-    {% endif %}
+
 
 
   </div>

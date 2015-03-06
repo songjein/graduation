@@ -26,6 +26,8 @@ class Project(db.Model):
 
     file_key = db.Column(db.String(255))
 
+    memlist = db.Column(db.Text(), default="")
+
     # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
     user_id = db.Column(db.String(255))
     user = db.relationship('User', 
@@ -43,21 +45,21 @@ class ProjectTag(db.Model):
     # relationship
     tags = db.Column(db.Text(), default=None)
 
-# 구성원 판단시 Project.user_id (생성자) + Participants.user_id(구성원)
-class Member(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+# # 구성원 판단시 Project.user_id (생성자) + Participants.user_id(구성원)
+# class Member(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(db.String(255))
-    user = db.relationship('User',
-        foreign_keys=[user_id],
-        primaryjoin="Member.user_id==User.id",
-        backref=db.backref('members', cascade='all, delete-orphan', lazy='dynamic')) #User쪽에서 일로 넘어올 필요는 x 
+#     user_id = db.Column(db.String(255))
+#     user = db.relationship('User',
+#         foreign_keys=[user_id],
+#         primaryjoin="Member.user_id==User.id",
+#         backref=db.backref('members', cascade='all, delete-orphan', lazy='dynamic')) #User쪽에서 일로 넘어올 필요는 x 
 
-    project_id = db.Column(db.Integer)
-    project = db.relationship('Project',
-        foreign_keys=[project_id],
-        primaryjoin="Member.project_id==Project.id",
-        backref=db.backref('members', cascade='all, delete-orphan', lazy='dynamic'))
+#     project_id = db.Column(db.Integer)
+#     project = db.relationship('Project',
+#         foreign_keys=[project_id],
+#         primaryjoin="Member.project_id==Project.id",
+#         backref=db.backref('members', cascade='all, delete-orphan', lazy='dynamic'))
 
 
 class Group(db.Model):
@@ -157,7 +159,7 @@ class User(db.Model):
     favlist = db.Column(db.Text())
 
     # 멤버 리스트
-    # mprojlist = db.Column(db.Text())
+    mprojects = db.Column(db.Text(), default="")
 
     def is_authenticated(self):
         return True

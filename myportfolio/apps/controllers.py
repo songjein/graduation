@@ -21,7 +21,7 @@ import google.appengine.ext as google
 class Photo(google.db.Model):
     photo = google.db.BlobProperty()
 
-from apps.models import (User, Comment, Log, Group, Project, Member)
+from apps.models import (User, Comment, Log, Group, Project)
 
 #coding: utf8;
 
@@ -166,10 +166,12 @@ def main():
     user = User.query.get(g.user.id)
 
     my_projects = user.projects # 내가 만든 프로젝트
-    participates = user.members 
+    
+    # 반드시 수정해야함
+    # participates = user.members 
 
-    for member in participates:
-        my_projects.append(member.project) 
+    # for member in participates:
+    #     my_projects.append(member.project) 
 
     # 관련 친구 뽑아내기 
     related_person = []
@@ -232,9 +234,13 @@ def my_project():
     projects = user.projects
 
     # 유저가 초대된 프로젝트 정보도..
-    members = user.members
+    member_projs = []
+    if user.mprojects != None and user.mprojects != "":
+        mproj_id_list = user.mprojects.split(',')
+        for m_id in mproj_id_list:
+            member_projs.append(Project.query.get(m_id))
 
-    return render_template('main/main.html', mode="mine" , projects=projects, members=members)
+    return render_template('main/main.html', mode="mine" , projects=projects, member_projs=member_projs)
 
 @app.route('/ones_project/<user_id>')
 def ones_project(user_id):
@@ -284,8 +290,10 @@ def project_detail(proj_id):
     list_item.pop()
 
     members = []
-    for member in project.members:
-        members.append(member.user_id)
+    if project.memlist != None and project.memlist != "":
+        member_id_list = project.memlist.split(',')
+        for member_id in member_id_list:
+            members.append(User.query.get(member_id))
 
     return render_template('project_detail/project_detail.html', project=project , logs=logs, list_item=list_item, members=members)
 
@@ -319,6 +327,7 @@ def add_member_to(proj_id):
 
     matched_users = []
 
+    # code for search (method get)
     if 'name' in request.args :
         keyword = request.args['name'].lower()
 
@@ -330,27 +339,49 @@ def add_member_to(proj_id):
                 matched_users.append(user)
 
 
-    # if request.method == 'POST':
-    #     user_id = request.form['user_id']
-    #     user = User.query.get(user_id)
+    # ajax for adding member { 'user_id' : adfafadsf } (method post)
+    if request.method == 'POST':
+        added_user_id = request.form['user_id']
+        added_user = User.query.get(added_user_id)
 
-    #     project = Project.query.get(proj_id)
+        project = Project.query.get(proj_id)
 
-    #     #원랜 다 안써도 되지 않나? 자동으로 채워주는 부분이 어디까진지 몰라서 다쓴다.
-    #     member = Member(
-    #             user = user,
-    #             user_id = user_id,
-    #             project = project,
-    #             project_id = proj_id,
-    #         )
-    #     db.session.add(member)
-    #     db.session.commit()
 
-    #     flash('add success!','success')
+        # added_user.mprojects 에 project id넣기
+        # 이걸 ""로 할걸 그랬어 괜히 None으로해서..
+        if added_user.mprojects==None or len(added_user.mprojects) == 0: 
+            added_user.mprojects = proj_id 
+        elif proj_id not in added_user.mprojects:
+            # 멤버가 아닐 때
+            added_user.mprojects += "," + proj_id
+        else:
+            # 멤버일 때 -> 삭제
+            mplist = added_user.mprojects.split(',')
+            mplist.remove(proj_id)
+            added_user.mprojects =  ",".join(mplist)
 
-    #     return redirect(url_for('project_detail', proj_id=proj_id))
 
-    # users = User.query.all()
+        # project.members에 user id넣기
+        # 이걸 ""로 할걸 그랬어 괜히 None으로해서..
+        if project.memlist==None or len(project.memlist) == 0: 
+            project.memlist = added_user_id 
+        elif added_user_id not in project.memlist:
+            # 멤버가 아닐 때
+            project.memlist += "," + added_user_id
+        else:
+            # 멤버일 때 -> 삭제
+            mlist = project.memlist.split(',')
+            mlist.remove(added_user_id)
+            project.memlist =  ",".join(mlist)
+
+
+        db.session.commit()
+
+        # return redirect(url_for('project_detail', proj_id=proj_id))
+        return "add success"
+
+
+
     project = Project.query.get(proj_id)
 
     return render_template('add_member/add_member.html', matched_users= matched_users, project=project)
@@ -804,6 +835,8 @@ def myportfolio():
     user = g.user
 
     projects = user.projects
+
+    # 멤퍼추가
 
     return render_template('myportfolio/myportfolio.html', projects = projects)
 

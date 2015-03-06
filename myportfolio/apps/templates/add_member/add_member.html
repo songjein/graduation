@@ -90,15 +90,39 @@ $(document).ready(function() {
       <div class="grid">
         <center>
           <div class="imgholder">
-            <a href="{{url_for('ones_project', user_id=person.id)}}"><img src="{{person.picture}}"></a>
+            <a class="ajax_add_member" href="#" data-id="{{person.id}}"><img src="{{person.picture}}"></a>
           </div>
-          <center><strong><a href="#">{{person.name}}</a></strong></center>
+          <center><strong><a class="ajax_add_member" href="#" data-id="{{person.id}}">{{person.name}}</a></strong></center>
         </center>
       </div>
     {% endfor %}
   </div>
 </div>
 
+
+<script>
+  $(document).ready(function(){
+    
+
+
+    $('.ajax_add_member').click(function(){
+
+      // alert($(this).attr('data-id'))
+      var id = $(this).attr('data-id')
+      $.ajax({
+       url: '{{url_for("add_member_to", proj_id=project.id)}}',
+       type: 'POST',
+       data: {
+        user_id: id
+       },
+       success: function(data){
+            // 나중에 data로 구분해서 삭제인지 성공인지! 구분하기
+          alert('멤버 추가 성공');
+       }
+      })
+    })
+ })
+</script>
 
 
 {% endblock%}
