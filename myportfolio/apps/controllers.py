@@ -248,9 +248,16 @@ def ones_project(user_id):
 
     projects = user.projects
 
-    members = user.members
+    # members = user.members
 
-    return render_template('main/main.html', mode="others" , projects=projects, members=members, user_id=user_id)
+    # 유저가 초대된 프로젝트 정보도..
+    member_projs = []
+    if user.mprojects != None and user.mprojects != "":
+        mproj_id_list = user.mprojects.split(',')
+        for m_id in mproj_id_list:
+            member_projs.append(Project.query.get(m_id))
+
+    return render_template('main/main.html', mode="others" , projects=projects, member_projs=member_projs, user_id=user_id)
 
 
 
@@ -313,9 +320,16 @@ def statistics(proj_id):
             contributers.append(comment.user_id)
 
     result = {}
-    members = project.members
-    for member in members :
-        result[member.user.name] = contributers.count(member.user.id) 
+
+    if project.memlist != None and project.memlist != "":
+        members = []
+        id_list = project.memlist.split(',')    
+        
+        for mid in id_list:
+            members.append(User.query.get(mid))
+
+        for member in members :
+            result[member.name] = contributers.count(member.id) 
     # 만든사람
     result[project.user.name] = contributers.count(project.user.id)
 
@@ -529,7 +543,7 @@ def make_log(project_id):
         db.session.commit()
 
         # facebook에 기록
-        if request.form['fbcheck'] != None and request.form['fbcheck'] == "on" :
+        if 'fbcheck' in request.form and request.form['fbcheck'] != None and request.form['fbcheck'] == "on" :
             userinfo = facebook.post('/me/feed', 
                 data={
                 'link': 'http://my-port4lio.appspot.com/project_detail/'+ project_id, 
