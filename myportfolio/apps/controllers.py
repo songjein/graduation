@@ -533,10 +533,55 @@ def make_log(project_id):
         """ 
 
         tags = noun_extractor.extract_noun(content)
-        # 가중치 계산해서 줄이기
-        tags = set(tags)
 
-        project.tags_list =",".join(tags)
+        # 가중치 계산해서 줄이기
+        tagset = set(tags)
+        new_dic = {}
+        for tag in tagset:
+            new_dic[tag] = tags.count(tag)
+        # {'aaa': 2, 'bbb': 3, 'ccc': 1} 이런식으로 ..만들어짐.
+
+        # column엔 "aaa:2,bbb:3,ccc:1" 이런식으로 저장할 게
+        tmp = ""
+        if project.tags_list == None:
+            flag = False
+            for key, val in new_dic.iteritems():
+                if not flag:
+                    tmp = key + ":" + str(val)
+                    flag = True
+                else:
+                    tmp += "," + key + ":" + str(val)
+
+        else:
+            # project.tags_list를 딕셔너리로 복원
+            old_dic = {}
+            tmps = project.tags_list.split(',')
+            for tmp in tmps:
+                t = tmp.split(':')
+                key = t[0]
+                val = t[1]
+                old_dic[key] = int(val)
+
+            # 방금 얻은 new_dic 를 old dic에 더해준다. 
+            # 원래 있는거면  val + 아니면 맨뒤에 key,val +
+            for nk, nv in new_dic.iteritems():
+                if nk in old_dic:
+                    old_dic[nk] += nv
+                else :
+                    old_dic[nk] = nv
+
+
+            # 다시 스트링으로 변환
+            flag = False
+            for key, val in old_dic.iteritems():
+                if not flag:
+                    tmp = key + ":" + str(val)
+                    flag = True
+                else:
+                    tmp += "," + key + ":" + str(val)
+
+
+        project.tags_list = tmp
         # 태그 저장
 
         db.session.add(log)
@@ -594,7 +639,6 @@ def make_log_delete_sche(project_id, item_num, title):
                 file_key = file_key
             )
 
-        db.session.commit()
         db.session.add(log)
         db.session.commit()
 
@@ -789,6 +833,10 @@ def search():
     projectlist = Project.query.all()
     projects = []
     for project in projectlist:
+        
+        if project.tags_list == None:
+            continue
+
         tags = project.tags_list.split(',')
 
         if keyword in project.title.lower():

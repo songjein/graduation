@@ -9,6 +9,12 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/stylefortimeline.css') }}"> <!-- Resource style -->
 	<script src="{{ url_for('static', filename='js/modernizr.js') }}"></script> <!-- Modernizr -->
 
+	<style>
+		h1, h2 {
+			font-weight: bold;
+		}
+	</style>
+
 
 	<section id="cd-timeline" class="cd-container">
 
@@ -27,8 +33,13 @@
 				    {% else %}
 				      (사진 없음)
 				    {% endif%}
-				   
+
+				   	<h2 style="color:red">프로젝트 설명</h2>
 					<p>{{project.description}}</p>
+					<h2 style="color:red">프로젝트 구성원 : <span style="color:black">N명(수정)</span></h2>
+					<h2 style="color:red">로그 갯수 : <span style="color:black">N개(수정)</span></h2>
+					<h2 style="color:red">좋아요 갯수 : <span style="color:black">{{project.like_count}}</span></h2>
+
           			 <a href="{{url_for('project_detail', proj_id=project.id)}}" class="btn btn-danger btn-lg col-md-12" role="button">자세히 보기</a>
 					<span class="cd-date">{{project.date_created}}</span>
 				</div> <!-- cd-timeline-content -->
@@ -52,8 +63,12 @@
 				    {% else %}
 				      (사진 없음)
 				    {% endif%}
-				   
+				   	<h2 style="color:red">프로젝트 설명</h2>
 					<p>{{project.description}}</p>
+					<h2 style="color:red">프로젝트 구성원 : <span style="color:black">N명(수정)</span></h2>
+					<h2 style="color:red">로그 갯수 : <span style="color:black">N개(수정)</span></h2>
+					<h2 style="color:red">좋아요 갯수 : <span style="color:black">{{project.like_count}}</span></h2>
+
           			 <a href="{{url_for('project_detail', proj_id=project.id)}}" class="btn btn-danger btn-lg col-md-12" role="button">자세히 보기</a>
 					<span class="cd-date">{{project.date_created}}</span>
 				</div> <!-- cd-timeline-content -->
