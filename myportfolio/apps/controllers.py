@@ -222,7 +222,19 @@ def main():
 
     fbfriends = tmpList
 
-    return render_template('main/main.html', projects=projects, related_person=related_person, fbfriends=fbfriends)
+
+    invites = None
+
+    if user.invites != "" and user.invites != None:
+        invites = user.invites.split(',')
+
+        tmp = []
+        for proj_id in invites:
+            tmp.append(Project.query.get(proj_id))
+
+        invites = tmp
+    
+    return render_template('main/main.html', projects=projects, related_person=related_person, fbfriends=fbfriends, invites=invites)
 
 
 @app.route('/my_project')
@@ -302,7 +314,20 @@ def project_detail(proj_id):
         for member_id in member_id_list:
             members.append(User.query.get(member_id))
 
-    return render_template('project_detail/project_detail.html', project=project , logs=logs, list_item=list_item, members=members)
+
+    invites = None
+
+    if project.invites != "" and project.invites != None:
+        invites = project.invites.split(',')
+
+        tmp = []
+        for user_id in invites:
+            tmp.append(User.query.get(user_id))
+
+        invites = tmp
+
+
+    return render_template('project_detail/project_detail.html', project=project , logs=logs, list_item=list_item, members=members, invites=invites)
 
 @app.route('/statistics/<proj_id>')
 def statistics(proj_id):
@@ -336,6 +361,8 @@ def statistics(proj_id):
 
     return render_template('statistics/statistics.html', project= project, contributers=result)
 
+
+
 @app.route('/add_member_to/<proj_id>', methods=['GET', 'POST'])
 def add_member_to(proj_id):
 
@@ -353,52 +380,153 @@ def add_member_to(proj_id):
                 matched_users.append(user)
 
 
-    # ajax for adding member { 'user_id' : adfafadsf } (method post)
-    if request.method == 'POST':
-        added_user_id = request.form['user_id']
-        added_user = User.query.get(added_user_id)
 
+
+    # mode 가 ok면 추가, no면 리스트에서만 제거
+    if 'mode' in request.args:
+
+        added_user_id = request.args['user_id']
+        added_user = User.query.get(added_user_id)
         project = Project.query.get(proj_id)
 
 
-        # added_user.mprojects 에 project id넣기
-        # 이걸 ""로 할걸 그랬어 괜히 None으로해서..
-        if added_user.mprojects==None or len(added_user.mprojects) == 0: 
-            added_user.mprojects = proj_id 
-        elif proj_id not in added_user.mprojects:
-            # 멤버가 아닐 때
-            added_user.mprojects += "," + proj_id
-        else:
-            # 멤버일 때 -> 삭제
-            mplist = added_user.mprojects.split(',')
-            mplist.remove(proj_id)
-            added_user.mprojects =  ",".join(mplist)
+        # ok 초대 승인 from ox.html
+        if request.args['mode'] == 'ok' or request.args['mode'] == 'rok':
+            # not for ajax, this is for o/x page (using form method = post)
+            # 유저가 o를 눌렀을 때 여기로 와서 실제로 멤버로 추가가 된다. 삭제 혹은 탈퇴 요청도 여기서 가능 
+            
+            # added_user.mprojects 에 project id넣기
+            # 이걸 ""로 할걸 그랬어 괜히 None으로해서..
+            if added_user.mprojects==None or len(added_user.mprojects) == 0: 
+                added_user.mprojects = proj_id 
+            elif proj_id not in added_user.mprojects:
+                # 멤버가 아닐 때
+                added_user.mprojects += "," + proj_id
+            else:
+                # 멤버일 때 -> 삭제
+                mplist = added_user.mprojects.split(',')
+                mplist.remove(proj_id)
+                added_user.mprojects =  ",".join(mplist)
 
 
-        # project.members에 user id넣기
-        # 이걸 ""로 할걸 그랬어 괜히 None으로해서..
-        if project.memlist==None or len(project.memlist) == 0: 
-            project.memlist = added_user_id 
-        elif added_user_id not in project.memlist:
-            # 멤버가 아닐 때
-            project.memlist += "," + added_user_id
-        else:
-            # 멤버일 때 -> 삭제
-            mlist = project.memlist.split(',')
-            mlist.remove(added_user_id)
-            project.memlist =  ",".join(mlist)
+            # project.members에 user id넣기
+            # 이걸 ""로 할걸 그랬어 괜히 None으로해서..
+            if project.memlist==None or len(project.memlist) == 0: 
+                project.memlist = added_user_id 
+            elif added_user_id not in project.memlist:
+                # 멤버가 아닐 때
+                project.memlist += "," + added_user_id
+            else:
+                # 멤버일 때 -> 삭제
+                mlist = project.memlist.split(',')
+                mlist.remove(added_user_id)
+                project.memlist =  ",".join(mlist)
 
 
-        db.session.commit()
+            # 초대 목록에서 제거 코드
+            if request.args['mode'] == 'ok':
+                tmp = added_user.invites.split(',')
+                tmp.remove(proj_id)
+                added_user.invites = ",".join(tmp)
+            else :
+                tmp = project.invites.split(',')
+                tmp.remove(added_user_id)
+                project.invites = ",".join(tmp)
 
-        # return redirect(url_for('project_detail', proj_id=proj_id))
-        return "add success" #delete일땐 delete으로 메시지날려주기
+            db.session.commit()
+
+
+            return redirect(url_for('my_project'))
+
+        # no 초대 거부
+        elif request.args['mode'] == 'no' or request.args['mode'] == 'rno':
+            # 초대 목록에서 제거 코드
+            if request.args['mode'] == 'no':
+                tmp = added_user.invites.split(',')
+                tmp.remove(proj_id)
+                added_user.invites = ",".join(tmp)
+            else :
+                tmp = project.invites.split(',')
+                tmp.remove(added_user_id)
+                project.invites = ",".join(tmp)
+
+            db.session.commit()
+
+            return redirect(url_for('main'))
+
+
+
+    # for ajax on the add_member.html to adding member { 'user_id' : adfafadsf } (method post)
+    if request.method == 'POST':
+
+        added_user_id = request.form['user_id']
+        added_user = User.query.get(added_user_id)
+        project = Project.query.get(proj_id)
+
+        # ajax from add_member.html
+        if request.form['mode'] == "invite":
+            # 그 유저의 invites 에 초대받은 프로젝트를 추가한다.
+            # 만약 그 프로젝트의 멤버가 아니라면!
+            if (added_user_id not in project.memlist) and (added_user_id != project.user_id):
+
+                if added_user.invites==None or len(added_user.invites)==0:
+                    added_user.invites = proj_id
+                elif proj_id not in added_user.invites:
+                    added_user.invites += "," + proj_id
+
+                db.session.commit()
+
+                return "ok"
+            else:
+                return "no"
+
+
+        # ajax from project_detail.html 내가 멤버가 아니기 때문에 요청을 할수 있었음.
+        elif request.form['mode'] == "request":
+            # 그 프로젝트의 invites에 초대받은 프로젝트를 추가한다.
+            if project.invites==None or len(project.invites)==0:
+                project.invites = added_user_id
+            elif added_user_id not in project.invites:
+                project.invites += "," + added_user_id
+            else:
+                return "no"
+
+            db.session.commit()
+            return "ok"
 
 
 
     project = Project.query.get(proj_id)
 
     return render_template('add_member/add_member.html', matched_users= matched_users, project=project)
+
+
+@app.route('/reply_for_invite/<proj_id>')
+def reply_for_invite(proj_id):
+    project = Project.query.get(proj_id)
+
+    members = []
+    if project.memlist != None and project.memlist != "":
+        member_id_list = project.memlist.split(',')
+        for member_id in member_id_list:
+            members.append(User.query.get(member_id))
+
+    return render_template('add_member/ox.html', project=project, members=members)
+
+
+@app.route('/reply_for_request/<proj_id>/<user_id>')
+def reply_for_request(proj_id, user_id):
+    project = Project.query.get(proj_id)
+
+    members = []
+    if project.memlist != None and project.memlist != "":
+        member_id_list = project.memlist.split(',')
+        for member_id in member_id_list:
+            members.append(User.query.get(member_id))
+
+    return render_template('add_member/ox.html', project=project, members=members, user_id=user_id, mode="request")
+
+
 
 
 

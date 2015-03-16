@@ -166,7 +166,8 @@ $(document).ready(function() {
       </div>
     {% endif %}
 
-    {% if related_person%}
+  <!-- 관련 사람 보여주는 코드인데 쓸데 없어 보임.-->
+  <!--   {% if related_person%}
       {% for person in related_person %}
       <div class="grid">
         <center>
@@ -176,6 +177,23 @@ $(document).ready(function() {
           <center><strong><a href="#">{{person[0].name}}</a></strong></center>
           <center><p>{{person[1]}}번 글을 남김.</p></center>
         </center>
+      </div>
+      {% endfor%}
+    {% endif %} -->
+
+    
+
+    {% if invites %}
+      {% for proj in invites %}
+      <div class="grid" style="background-color:#B2EBF4">
+          {% if proj.file_key %}
+          <div class="imgholder">
+            <a href="{{url_for('reply_for_invite', proj_id=proj.id)}}"><img src="/show/{{proj.file_key}}"></a>
+          </div>
+          {% endif %}
+          <center><strong>Invitation</strong></center>
+          <center><p>팀원으로 초대 받았습니다</p></center>
+          <div class="meta">{{proj.user.name}}</div>
       </div>
       {% endfor%}
     {% endif %}

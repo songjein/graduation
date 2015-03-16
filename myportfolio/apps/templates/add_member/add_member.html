@@ -113,11 +113,16 @@ $(document).ready(function() {
        url: '{{url_for("add_member_to", proj_id=project.id)}}',
        type: 'POST',
        data: {
-        user_id: id
+        user_id: id,
+        mode: "invite"
        },
        success: function(data){
             // 나중에 data로 구분해서 삭제인지 성공인지! 구분하기
-          alert('멤버 추가 성공');
+            if (data == "ok")
+              alert('초대 신청 완료');
+            else (data == "no")
+              alert('이미 멤버 입니다');
+          //alert('멤버 추가 성공');
        }
       })
     })

@@ -153,6 +153,23 @@ $(document).ready(function() {
         </div>
         {% endfor %}
       {% endif %}
+
+
+      <!--초대 목록-->
+      {% if invites %}
+        {% for person in invites %}
+          <div class="grid" style="background:#E4F7BA">
+          <center>
+            <div class="imgholder">
+              <a href="{{url_for('reply_for_request', proj_id=project.id, user_id=person.id)}}"><img src="{{person.picture}}"></a>
+            </div>
+            <center><strong><a href="{{url_for('ones_project', user_id=person.id)}}">{{person.name}}</a></strong></center>
+            <center><p>팀원 참가 요청<br>(회원정보는 이름클릭)</p></center>
+          </center>
+        </div>
+        {% endfor %}
+      {% endif %}
+
     {% else %}
     
       <!-- 좋아요 기능 None 때문에 에러 났었음 -->
@@ -197,6 +214,46 @@ $(document).ready(function() {
         <!-- <div class="meta">by j osborn</div> -->
       </div>
       {% endif %}
+      
+      
+
+      <div class="grid menu_grid">
+        <div class="imgholder">
+          <center><a class="ajax_request_member" href="#" data-id={{g.user.id}}><span class="glyphicon glyphicon-send" style="color:yellow;font-size: 5em;"></span></a><center>
+        </div>
+        <center><a href="#"><strong style="color:rgba(255,255,255, 0.9);">Request</strong></a></center>
+        <center><p>팀원 추가 신청</p></center>
+        <!-- <div class="meta">by j osborn</div> -->
+      </div>
+
+                        <script>
+                          $(document).ready(function(){
+
+                            $('.ajax_request_member').click(function(){
+
+                              // alert($(this).attr('data-id'))
+                              var id = $(this).attr('data-id')
+                              $.ajax({
+                               url: '{{url_for("add_member_to", proj_id=project.id)}}',
+                               type: 'POST',
+                               data: {
+                                user_id: id,
+                                mode: "request"
+                               },
+                               success: function(data){
+                                    // 나중에 data로 구분해서 삭제인지 성공인지! 구분하기
+                                    if (data == "ok")
+                                      alert('팀원 추가 신청 완료');
+                                    else (data == "no")
+                                      alert('이미 신청 했습니다');
+                                  //alert('멤버 추가 성공');
+                               }
+                              })
+
+                              return false;
+                            })
+                         })
+                        </script>
 
 
        <!-- 계획 아이템들  -->
@@ -212,9 +269,8 @@ $(document).ready(function() {
         {% endfor %}
       {% endif %}
     {% endif %}
-  
-
-
+    
+    
     {% for log in logs%}
       <div class="grid">
 <!--         {% if log.file_key %}
