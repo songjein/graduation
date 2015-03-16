@@ -392,7 +392,7 @@ def add_member_to(proj_id):
         db.session.commit()
 
         # return redirect(url_for('project_detail', proj_id=proj_id))
-        return "add success"
+        return "add success" #delete일땐 delete으로 메시지날려주기
 
 
 
@@ -837,13 +837,16 @@ def search():
         if project.tags_list == None:
             continue
 
-        tags = project.tags_list.split(',')
+        tags = project.tags_list
 
         if keyword in project.title.lower():
             # result.append({'title': user.name, 'thumb':user.picture, 'text':'test', 'tags':user.id, 'loc':'#'})
             projects.append(project)
         elif keyword in tags:
             projects.append(project)
+
+
+
 
     return render_template('search/search.html', persons=persons, projects=projects, flag="search_result")
 

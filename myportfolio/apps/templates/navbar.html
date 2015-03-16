@@ -32,7 +32,7 @@
         
         {% if g.user.is_authenticated() %}
         <ul id="nav_list" class="nav navbar-nav navbar-right">
-            <li><a href="#" class="llUserPictureInNav">게시판</a></li>
+            <li><a href="http://abs1111.dothome.co.kr/xe/Free" class="llUserPictureInNav">게시판</a></li>
             <li><a href="#" class="llUserPictureInNav"><img src="{{ g.user.picture }}"> {{ g.user.fullname }}님</a></li>
             <li><a href="#">{{g.user.name}}님 환영합니다.</a></li>
             <li><a href="{{url_for('logout')}}">로그아웃</a></li>

@@ -28,6 +28,9 @@ class Project(db.Model):
 
     memlist = db.Column(db.Text(), default="")
 
+    # 유저의 프로젝트 참가 요청
+    invites = db.Column(db.Text())
+
     # 유저 아이디 입력 받은걸로 get해서 객체를 user 에 저장
     user_id = db.Column(db.String(255))
     user = db.relationship('User', 
@@ -160,6 +163,9 @@ class User(db.Model):
 
     # 멤버 리스트
     mprojects = db.Column(db.Text(), default="")
+
+    # 프로젝트 관리자의 초대
+    invites = db.Column(db.Text())
 
     def is_authenticated(self):
         return True
