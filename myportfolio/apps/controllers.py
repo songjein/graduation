@@ -436,7 +436,7 @@ def add_member_to(proj_id):
             db.session.commit()
 
 
-            return redirect(url_for('my_project'))
+            return redirect(url_for('project_detail', proj_id=proj_id))
 
         # no 초대 거부
         elif request.args['mode'] == 'no' or request.args['mode'] == 'rno':
