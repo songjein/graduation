@@ -14,6 +14,8 @@ from core import variables, OAuthManagement
 
 import operator 
 
+import random
+
 import pusher
 
 import google.appengine.ext as google 
@@ -157,23 +159,28 @@ def logout():
     #     result += '<br>'
     # return result;
 
+@app.route('/guest')
+def guest():
+    # 권한은 ???
+
+    projects = Project.query.all()
+
+    return render_template('main/main.html', projects=projects)
+
+
 @app.route('/main')
 def main():
     
     projects = Project.query.all()
-
+    random.shuffle(projects)
+    
     # 그냥 g.user하면 잘 안됨.
     user = User.query.get(g.user.id)
 
-    my_projects = user.projects # 내가 만든 프로젝트
-    
-    # 반드시 수정해야함
-    # participates = user.members 
-
-    # for member in participates:
-    #     my_projects.append(member.project) 
-
     # 관련 친구 뽑아내기 
+    #########################################################################
+    my_projects = user.projects # 내가 만든 프로젝트
+
     related_person = []
     for project in my_projects:
         logs = project.logs
@@ -200,6 +207,8 @@ def main():
     for item in lst:
         related_person.append( (item[1][0], item[1][1]) )
     # 아직 자르진 않음
+    #########################################################################
+
 
     # 페북 친구 가져오기
     fbfriends = facebook.get('/me/friends')
@@ -208,7 +217,7 @@ def main():
     # return str(fbfriends[0]['id'])
  
 
-    # 친구 추천
+    # 친구 추천 (페북 친구인데 , myportfolio를 사용중이라면)
     tmpList = []
     for i in range(len(fbfriends)):
         # 페북 친구가 myport4lio에서 내 친구가 아니라면
@@ -221,18 +230,21 @@ def main():
             tmpList.append(User.query.get(fbfriends[i]['id']))    
 
     fbfriends = tmpList
+    
+    #########################################################################
 
 
+    # 초대당한거 표시
     invites = None
-
     if user.invites != "" and user.invites != None:
         invites = user.invites.split(',')
-
         tmp = []
         for proj_id in invites:
             tmp.append(Project.query.get(proj_id))
-
         invites = tmp
+    
+    #########################################################################
+
     
     return render_template('main/main.html', projects=projects, related_person=related_person, fbfriends=fbfriends, invites=invites)
 
@@ -253,6 +265,7 @@ def my_project():
             member_projs.append(Project.query.get(m_id))
 
     return render_template('main/main.html', mode="mine" , projects=projects, member_projs=member_projs)
+
 
 @app.route('/ones_project/<user_id>')
 def ones_project(user_id):
@@ -326,8 +339,13 @@ def project_detail(proj_id):
 
         invites = tmp
 
+    if "oauth_token" not in session:
+        return render_template('project_detail/project_detail_g.html', project=project , logs=logs, list_item=list_item, members=members)
+
 
     return render_template('project_detail/project_detail.html', project=project , logs=logs, list_item=list_item, members=members, invites=invites)
+
+
 
 @app.route('/statistics/<proj_id>')
 def statistics(proj_id):
@@ -820,6 +838,8 @@ def log_detail(log_id):
 
     return render_template('log_detail/log_detail.html', log=log)
 
+
+
 @app.route('/delete_log/<log_id>')
 def delete_log(log_id):
     log = Log.query.get(log_id)
@@ -828,10 +848,13 @@ def delete_log(log_id):
     db.session.commit()
     return redirect(url_for('project_detail', proj_id=proj_id))
 
+
+
 @app.route('/show/<key>')
 def shows(key):
     upload_data = google.db.get(key)
     return app.response_class(upload_data.photo)
+
 
 
 @app.route('/make_comment/', methods=['GET', 'POST'])
@@ -1082,15 +1105,9 @@ def meeting(proj_id):
 @app.route('/init_list/<proj_id>', methods=['GET'])
 def init_list(proj_id):
 
-    p = pusher.Pusher(
-      app_id='85292',
-      key='2f1737dadfe8bacfb3a1',
-      secret='f155f7d0a772622f9a67'
-    )
-
     project = Project.query.get(proj_id)
 
-    list_sring = ""
+    list_string = ""
     if project.schedule:  
         list_string = project.schedule
 
@@ -1108,8 +1125,8 @@ def save_list(proj_id):
 
     return "success"
 
-@app.route('/send', methods=['GET'])
-def sendmsg():
+@app.route('/send/<proj_id>', methods=['GET'])
+def sendmsg(proj_id):
 
     p = pusher.Pusher(
       app_id='85292',
@@ -1122,12 +1139,12 @@ def sendmsg():
 
 
     # 이 채널을 유동적으로.
-    p['test_channel'].trigger('chat_msg', {'name': chat_name, 'msg': chat_msg})
+    p[proj_id].trigger('chat_msg', {'name': chat_name, 'msg': chat_msg})
 
     return ""
 
-@app.route('/add_list', methods=['GET'])
-def add_list():
+@app.route('/add_list/<proj_id>', methods=['GET'])
+def add_list(proj_id):
 
     p = pusher.Pusher(
       app_id='85292',
@@ -1137,14 +1154,13 @@ def add_list():
 
     list_item = request.args.get('list_item')
 
-
     # 이 채널을 유동적으로.
-    p['test_channel'].trigger('add_list', {'list_item': list_item})
+    p[proj_id].trigger('add_list', {'list_item': list_item})
 
     return ""
 
-@app.route('/update_list', methods=['GET'])
-def update_list():
+@app.route('/update_list/<proj_id>', methods=['GET'])
+def update_list(proj_id):
 
     p = pusher.Pusher(
       app_id='85292',
@@ -1156,6 +1172,6 @@ def update_list():
 
 
     # 이 채널을 유동적으로.
-    p['test_channel'].trigger('update_list', {'list_string': list_string})
+    p[proj_id].trigger('update_list', {'list_string': list_string})
 
     return ""    
