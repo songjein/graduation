@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+<link rel='stylesheet' href="{{ url_for('static', filename='css/style_for_blocksit.css') }}" media='screen' />
+
+<style>
+  .grid{
+    color:black;
+  }
+  .menu_grid{
+    background-color:  rgba(0,0,0,0.9);
+    color: rgba(255,255,255, 0.9);
+  }
+</style>
+<script src="{{ url_for('static', filename='js/blocksit.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+
+  
+  //blocksit define
+  $(window).load( function() {
+    $('#container').BlocksIt({
+      numOfCol: 5,
+      offsetX: -8,
+      offsetY: 8
+    });
+  });
+  
+  //window resize
+  var currentWidth = 1100;
+  $(window).resize(function() {
+    var winWidth = $(window).width();
+    var conWidth;
+    if(winWidth < 660) {
+      conWidth = 440;
+      col = 2
+    } else if(winWidth < 880) {
+      conWidth = 660;
+      col = 3
+    } else if(winWidth < 1100) {
+      conWidth = 880;
+      col = 4;
+    } else {
+      conWidth = 1100;
+      col = 5;
+    }
+    
+    if(conWidth != currentWidth) {
+      currentWidth = conWidth;
+      $('#container').width(conWidth);
+      $('#container').BlocksIt({
+        numOfCol: col,
+        offsetX: -8,
+        offsetY: 8
+      });
+    }
+  });
+});
+</script>
+<!-- <link rel="shortcut icon" href="http://www.inwebson.com/wp-content/themes/inwebson2/favicon.ico" /> -->
+<!-- <link rel="canonical" href="http://www.inwebson.com/demo/blocksit-js/demo2/" /> -->
+
+
+
+
+
+
+
+<div style=" padding-top: 70px;"></div>
+
+<center><span style="font-size:3em">유저 추가</span><a href="{{url_for('project_detail', proj_id=project.id)}}"><span class="glyphicon glyphicon-backward" style="font-size:3em; margin-left:10px; color:#EDA900"></span></a>(뒤로가기)</center>
+
+<div class="container">
+    <div class="col-md-10">
+     <form class="navbar-form navbar-left" role="search" >
+         <div class="form-group">
+           <input type="text" class="form-control" placeholder="Search" name="name" id="tipue_drop_input" autocomplete="off" required sylte="width:100%">
+         </div>
+         <button type="submit" class="btn btn-default">Search</button>
+      </form>
+    </div>
+</div>
+
+
+<!-- Content -->
+<div id="wrapper">
+  
+  <div id="container">
+    {% for person in matched_users %}
+      <div class="grid">
+        <center>
+          <div class="imgholder">
+            <a class="ajax_add_member" href="#" data-id="{{person.id}}"><img src="{{person.picture}}"></a>
+          </div>
+          <center><strong><a class="ajax_add_member" href="#" data-id="{{person.id}}">{{person.name}}</a></strong></center>
+        </center>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+<script>
+  $(document).ready(function(){
+    
+
+
+    $('.ajax_add_member').click(function(){
+
+      // alert($(this).attr('data-id'))
+      var id = $(this).attr('data-id')
+      $.ajax({
+       url: '{{url_for("add_member_to", proj_id=project.id)}}',
+       type: 'POST',
+       data: {
+        user_id: id,
+        mode: "invite"
+       },
+       success: function(data){
+            // 나중에 data로 구분해서 삭제인지 성공인지! 구분하기
+            if (data == "ok")
+              alert('초대 신청 완료');
+            else (data == "no")
+              alert('이미 멤버 입니다');
+          //alert('멤버 추가 성공');
+       }
+      })
+    })
+ })
+</script>
+
+
+{% endblock%}

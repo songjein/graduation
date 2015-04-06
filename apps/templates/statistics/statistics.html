@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+<div style=" padding-top: 70px;"></div>
+
+                             <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+                             <script type="text/javascript">
+                               google.load("visualization", "1", {packages:["corechart"]});
+                               google.setOnLoadCallback(drawChart);
+                               function drawChart() {
+
+                                 var data = google.visualization.arrayToDataTable([
+                                   ['Task', '프로젝트 기여도'],
+                                   // ['{{project.user_id}}',5],
+                                   {% for key, value in contributers.iteritems()%}['{{key}}', {{value}}],{% endfor %}
+                                   // ['Work',     11],
+                                   // ['송제인',      2],
+                                   // ['Commute',  2],
+                                   // ['Watch TV', 2],
+                                   // ['Sleep',    7]
+                                 ]);
+
+                                 var options = {
+                                   title: '프로젝트 기여도'
+                                 };
+
+                                 var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+                                 chart.draw(data, options);
+                               }
+                             </script>
+
+
+  
+<script >
+  $(function(){
+    $('#nav_list').prepend('<li><a style="margin-right:3px;" href="{{url_for("project_detail", proj_id=project.id)}}"><span class="glyphicon glyphicon-backward" style="font-size:1.2em; margin-left:10px; color:#EDA900"></span><span style="margin-bottom:1px; ">(뒤로가기)</span></a></li>')
+  })
+</script>
+
+
+<center><span style="font-size:3em">기여도(로그 작성,댓글 작성,회의 참석)</span></center>
+<center><h5>시간별 참여 빈도수도 그래프로 나타낼 예정</h5></center>
+<center><div id="piechart" style="width: 900px; height: 500px;" style="background-color:transparent"></div></center>
+
+
+{% endblock%}
