@@ -1,0 +1,345 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+
+<div style=" padding-top: 70px;"></div>
+
+
+<style>
+  #title {font-size: 3em; padding : .2em; margin: 0; font-weight: bold;}
+
+  #to_do_list { width: 100%; margin-top: 1em;  }
+
+  #to_do_list ol {margin:0; padding: 1em 0 1em 3em; }
+
+
+  #chatpanel li {list-style: none; font-size:1.5em;  font-weight: bold; z-index:10;}
+
+  #to_do_list li {font-size: :2em; font-weight: bold}
+
+  button { font-weight: bold; }
+
+  .modal {
+    color: black;
+  }
+
+  /*li {font-size: 2em;}*/
+
+  textarea { width: 100%;}
+
+  li{
+    outline: 1px solid transparent;
+  }
+
+</style>
+
+<script >
+  $(function(){
+    $('#nav_list').prepend('<li><a style="margin-right:3px;" href="{{url_for("project_detail", proj_id=project.id)}}"><span class="glyphicon glyphicon-backward" style="font-size:1.2em; margin-left:10px; color:#EDA900"></span><span style="margin-bottom:1px; ">(뒤로가기)</span></a></li>')
+  })
+</script>
+
+<div class="row">
+  <div class="col-md-5">
+    <div id="chatpanel">
+    </div>
+  </div>
+  <div class="col-md-6 col-md-offset-1">
+    <div id="to_do_list">
+      <span id="title">To do list</span><span id="sub">(수정은 목록을 더블 클릭)</span>
+      <div>
+        <ol>
+          <li class="placeholder">목록 추가를 하려면, 여기에 drag&drop하세요</li>
+        </ol>
+      </div>
+    </div>
+    <!--button-->
+    <button type="button" id="record_btn" class="btn btn-default col-md-12">기록하기</button>
+  </div>
+</div>
+
+
+
+<nav class="navbar navbar-default navbar-fixed-bottom">
+  <div class="container" style="padding-top:10px">
+    <div class="row" >
+      <div class="form-group has-warning col-md-2">
+        <input type="text" class="form-control" id="chat_name" disabled value="{{g.user.name}}" >
+      </div>
+      <div class="form-group has-success col-md-8">
+        <input type="text" class="form-control" id="chat_msg" placeholder="message">
+      </div>
+      <div class="col-md-2">
+        <input type="button" id="send" class="btn btn-default" value="Send"/>
+      </div> 
+    </div>
+  </div>
+</nav>
+
+
+
+<!--Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h4 class="modal-title">리스트 아이템을 수정합니다.</h4>
+      </div>
+      <div class="modal-body">
+        <textarea></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-success save-btn" data-dismiss="modal">변경사항 저장</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+
+$(function(){
+  
+  // 최초에 한번 요청을 해서 리스트가 존재하는지 확인 후 업데이트
+  $.get('/init_list/{{project.id}}', {
+        }, function(data){
+
+            list_arr = data.split("*&*");
+            list_arr.pop(); // 맨마지막은 빈칸이라서..
+
+            // 현재 리스트를 비워주고 (.empty()를 쓰면 자식이 비워진다.)
+            $('#to_do_list ol').empty();
+
+            $.each(list_arr, function(index, value) { 
+              // result += (index + 1) + ': ' + value + "\n";
+              // 하나하나 추가해준다.
+              $( "<li></li>" ).text( value )
+                              .appendTo( "#to_do_list ol" )
+                              .dblclick(function(){
+                                // open modal
+                                $('#myModal').modal()
+                                // get the content of the current list item
+                                $current_item = $(this)
+                                $('.modal-body textarea').val($current_item.text())
+                                // if  click save button..
+                                $('.modal-footer .save-btn').click(function(){
+                                    
+                                  $current_item.text($('.modal-body textarea').val())
+                                   $.get('/update_list/{{project.id}}', {
+                                      list_string : getListString()
+                                    }, function(data){})   
+                                })
+                              })
+                            .hide().fadeIn(550, 'swing');
+      });
+
+
+
+
+
+
+
+
+        })  
+  
+  $('#record_btn').click(function(){
+    // alert(getListString());
+
+    $.get('/save_list/{{project.id}}', {
+          list_string : getListString()
+        }, function(data){
+          alert('To-do-list가 성공적으로 저장되었습니다!')
+        })  
+  })
+})
+
+
+// 리스트 아이템을 하나의 스트링으로 만들어 준다.
+function getListString(){
+    output = '';
+    $('ol li').each(function(index, item){
+      output += $('ol li').eq(index).text() + '*&*'
+    })
+    return output;
+}
+
+
+
+$(function() {
+
+    // code here
+    var pusher = new Pusher('2f1737dadfe8bacfb3a1')
+    var channel = pusher.subscribe('{{project.id}}')  // 이 채널이 템플릿을 통해서 바뀌어야함.
+
+
+
+    // 채팅 메시지 브로캐스트
+    channel.bind('chat_msg', function(data){
+      // $('#chatpanel').append('<h3>' + data.name + " : " + data.msg + '</h3>')
+
+      // tmp = $('<h3></h3>').html(data.name + " : " + data.msg)
+      // $('<div></div>').append(tmp).appendTo('#chatpanel').draggable()
+
+      //https://www.google.co.kr/search?q=bootstrap+button+size&oq=bootstrap+button+size&aqs=chrome..69i57j0l5.2851j0j4&sourceid=chrome&es_sm=122&ie=UTF-8#newwindow=1&q=change%20css%20while%20dragging
+      $('<li></li>').html('<span class="username" style="color:' +  getUsernameColor(data.name) +'">' + data.name + '</span> : <span class="usermsg">' + data.msg + '</span>' ).appendTo('#chatpanel').draggable({revert:true , helper:"clone"/*, start: function(event, ui) { $(this).css("color", 'black'); },  stop: function(event, ui) { $(this).css("color", "white"); }*/ }).hide().fadeIn(550, 'swing');;
+      // 근데 드래거블이 li전체에 걸쳐있고.. this가 이거 전체를 의미해서 전체가 검은색으로 되야할텐데..
+    })
+
+
+
+    // 리스트 추가 브로드캐스트
+    channel.bind('add_list', function(data){
+      $( "#to_do_list ol" ).find( ".placeholder" ).remove();
+      $( "<li></li>" ).text( data.list_item )
+                      .appendTo( "#to_do_list ol" )
+                      .dblclick(function(){
+                        // open modal
+                        $('#myModal').modal()
+                        // get the content of the current list item
+                        $current_item = $(this)
+                        $('.modal-body textarea').val($current_item.text())
+                        // if  click save button..
+                        $('.modal-footer .save-btn').click(function(){
+                            
+                          $current_item.text($('.modal-body textarea').val())
+                           $.get('/update_list/{{project.id}}', {
+                            list_string : getListString()
+                          }, function(data){})   
+                        })
+                      })
+                      .hide().fadeIn(550, 'swing');
+                      
+    })
+
+
+
+    // 리스트 업데이트 브로드캐스트
+    channel.bind('update_list', function(data){
+
+      // if (data.list_String == "")
+
+      // alert("hello: " + data.list_string)
+      list_arr = data.list_string.split("*&*");
+      list_arr.pop(); // 맨마지막은 빈칸이라서..
+
+      // 현재 리스트를 비워주고 (.empty()를 쓰면 자식이 비워진다.)
+      $('#to_do_list ol').empty();
+
+      $.each(list_arr, function(index, value) { 
+        // result += (index + 1) + ': ' + value + "\n";
+        // 하나하나 추가해준다.
+        $( "<li></li>" ).text( value )
+                        .appendTo( "#to_do_list ol" )
+                        .dblclick(function(){
+                          // open modal
+                          $('#myModal').modal()
+                          // get the content of the current list item
+                          $current_item = $(this)
+                          $('.modal-body textarea').val($current_item.text())
+                          // if  click save button..
+                          $('.modal-footer .save-btn').click(function(){
+                              
+                            $current_item.text($('.modal-body textarea').val())
+                             $.get('/update_list/{{project.id}}', {
+                                list_string : getListString()
+                              }, function(data){})   
+                          })
+                        })
+                      .hide().fadeIn(550, 'swing');
+      });
+
+    })
+
+
+
+
+    $( "#to_do_list ol" ).droppable({
+      activeClass: "ui-state-default",
+      hoverClass: "ui-state-hover",
+      accept: ":not(.ui-sortable-helper)",
+      drop: function( event, ui ) {
+        // $( this ).find( ".placeholder" ).remove();
+        // $( "<li></li>" ).text( ui.draggable.find('span:eq(1)').text() )
+        //                 .appendTo( this )
+        //                 .dblclick(function(){
+        //                   // open modal
+        //                   $('#myModal').modal()
+        //                   // get the content of the current list item
+        //                   $current_item = $(this)
+        //                   $('.modal-body textarea').val($current_item.text())
+        //                   // if  click save button..
+        //                   $('.modal-footer .save-btn').click(function(){
+                              
+        //                     $current_item.text($('.modal-body textarea').val())
+        //                   })
+        //                 })
+
+        // 다른 사람들에게도 전달
+        $.get('/add_list/{{project.id}}', {
+          list_item: ui.draggable.find('span:eq(1)').text()
+        }, function(data){})
+
+      }
+    }).sortable({
+      items: "li:not(.placeholder)",
+      sort: function() {
+        // gets added unintentionally by droppable interacting with sortable
+        // using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
+        $( this ).removeClass( "ui-state-default" );
+      },
+      update: function( event, ui ) {
+        // 변경이 일어나면 그 결과를 통째로 서버로 전송한다.
+        $.get('/update_list/{{project.id}}', {
+          list_string : getListString()
+        }, function(data){})    
+      }
+
+    });
+
+
+    $('input').keyup(function(e) {
+      if (e.keyCode == 13){
+        var name = $('#chat_name').val()
+        var msg = $('#chat_msg').val()
+
+        $('#chat_msg').val('')
+
+        $.get('/send/{{project.id}}', {
+          name_data : name,
+          msg_data : msg
+        }, function(data){})
+      }       
+    });
+
+    $('#send').click(function(e) {
+      var name = $('#chat_name').val()
+      var msg = $('#chat_msg').val()
+
+      $('#chat_msg').val('')
+
+      $.get('/send/{{project.id}}', {
+        name_data : name,
+        msg_data : msg
+      }, function(data){})
+    });
+
+  });
+
+
+function getUsernameColor(username) {
+  // Compute hash code
+  var hash = 7;
+  for (var i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + (hash << 5) - hash;
+  }
+  // Calculate color
+  var index = Math.abs(hash % 360);
+  return "hsl(" + index + ", 77%, 60%)";
+}
+
+</script>
+
+{% endblock %}

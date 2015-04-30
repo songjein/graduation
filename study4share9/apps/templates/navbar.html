@@ -1,0 +1,43 @@
+<style>
+            .llUserPictureInNav > img {
+    width: 20px;
+    height: 20px;
+    border-radius: 17px;
+    -webkit-border-radius: 17px;
+    -moz-border-radius: 17px;
+}
+</style>
+
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400|Merriweather:300,300italic" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/tipuedrop.css')}}">
+
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('main') }}">My portfolio <span class="glyphicon glyphicon-book"> </a>
+        </div>
+
+       <!--  <ul class="nav navbar-nav">
+            <li><span id="tipue_drop_content"></span></li>
+        <ul> -->
+        <!--tipue_drop 라이브러리는 이제 사실상 안쓰는거나 다름없다. 그냥 돋보기만 가져온셈 ㅋ...-->
+        <form action="{{url_for('search')}}" class="navbar-form navbar-left" role="search">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search" name="keyword" id="tipue_drop_input" autocomplete="off" required>
+          </div>
+          <button type="submit" class="btn btn-default">Search</button>
+        </form>
+        
+        {% if g.user.is_authenticated() %}
+        <ul id="nav_list" class="nav navbar-nav navbar-right">
+            <li><a href="http://abs1111.dothome.co.kr/xe/Free" class="llUserPictureInNav">게시판</a></li>
+            <li><a href="#" class="llUserPictureInNav"><img src="{{ g.user.picture }}"> {{ g.user.fullname }}님</a></li>
+            <li><a href="#">{{g.user.name}}님 환영합니다.</a></li>
+            <li><a href="{{url_for('logout')}}">로그아웃</a></li>
+        </ul>
+        {% endif %}
+    </div>
+</nav>
+
