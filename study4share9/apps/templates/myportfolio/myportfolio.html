@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block contents %}
+
+
+	<link href='http://fonts.googleapis.com/css?family=Droid+Serif|Open+Sans:400,700' rel='stylesheet' type='text/css'>
+
+	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}"> CSS reset -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/stylefortimeline.css') }}"> <!-- Resource style -->
+	<script src="{{ url_for('static', filename='js/modernizr.js') }}"></script> <!-- Modernizr -->
+
+	<style>
+		h1, h2 {
+			font-weight: bold;
+		}
+	</style>
+
+
+	<section id="cd-timeline" class="cd-container">
+
+	{% for project in projects%}
+
+			<div class="cd-timeline-block">
+				<div class="cd-timeline-img cd-movie">
+					<!-- <img src="{{ url_for('static', filename='images/cd-icon-picture.svg') }}" alt="Picture"> -->
+				</div> <!-- cd-timeline-img -->
+
+				<div class="cd-timeline-content">
+					<h2 style="color:red">{{project.title}}</h2>
+
+					{% if project.file_key%}
+				      <img src="/show/{{project.file_key}}" alt="사진 없음">
+				    {% else %}
+				      (사진 없음)
+				    {% endif%}
+
+				   	<h2 style="color:red">프로젝트 설명</h2>
+					<p>{{project.description}}</p>
+					<h2 style="color:red">프로젝트 구성원 : <span style="color:black">N명(수정)</span></h2>
+					<h2 style="color:red">로그 갯수 : <span style="color:black">N개(수정)</span></h2>
+					<h2 style="color:red">좋아요 갯수 : <span style="color:black">{{project.like_count}}</span></h2>
+
+          			 <a href="{{url_for('project_detail', proj_id=project.id)}}" class="btn btn-danger btn-lg col-md-12" role="button">자세히 보기</a>
+					<span class="cd-date">{{project.date_created}}</span>
+				</div> <!-- cd-timeline-content -->
+			</div> <!-- cd-timeline-block -->
+	{% else %}
+	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	{% endfor %}
+
+	{% for project in mprojects%}
+
+			<div class="cd-timeline-block">
+				<div class="cd-timeline-img cd-movie">
+					<!-- <img src="{{ url_for('static', filename='images/cd-icon-picture.svg') }}" alt="Picture"> -->
+				</div> <!-- cd-timeline-img -->
+
+				<div class="cd-timeline-content">
+					<h2 style="color:red">{{project.title}}</h2>
+
+					{% if project.file_key%}
+				      <img src="/show/{{project.file_key}}" alt="사진 없음">
+				    {% else %}
+				      (사진 없음)
+				    {% endif%}
+				   	<h2 style="color:red">프로젝트 설명</h2>
+					<p>{{project.description}}</p>
+					<h2 style="color:red">프로젝트 구성원 : <span style="color:black">N명(수정)</span></h2>
+					<h2 style="color:red">로그 갯수 : <span style="color:black">N개(수정)</span></h2>
+					<h2 style="color:red">좋아요 갯수 : <span style="color:black">{{project.like_count}}</span></h2>
+
+          			 <a href="{{url_for('project_detail', proj_id=project.id)}}" class="btn btn-danger btn-lg col-md-12" role="button">자세히 보기</a>
+					<span class="cd-date">{{project.date_created}}</span>
+				</div> <!-- cd-timeline-content -->
+			</div> <!-- cd-timeline-block -->
+	{% else %}
+	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	{% endfor %}
+	</section> <!-- cd-timeline -->
+
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script> <!-- Resource jQuery -->
+
+{% endblock %}

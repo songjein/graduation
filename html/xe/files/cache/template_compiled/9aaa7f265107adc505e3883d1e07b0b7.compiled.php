@@ -1,0 +1,1 @@
+<?php if(!defined("__XE__"))exit;?><img class="zbxe_widget_output" widget="login_info" skin="default" />
